@@ -1,0 +1,17 @@
+{
+  "name": "juego",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "test": "node --test prototyping/*.test.ts",
+    "prototype": "node prototyping/demo.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "@types/node": "^24.0.0"
+  }
+}

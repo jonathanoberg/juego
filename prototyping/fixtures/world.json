@@ -1,0 +1,138 @@
+{
+  "definitions": [
+    {
+      "id": "definition:adventurer",
+      "name": "Adventurer",
+      "components": {}
+    },
+    {
+      "id": "definition:ring-of-might",
+      "name": "Ring of Might",
+      "components": {
+        "equippable": {
+          "slots": [
+            "finger"
+          ]
+        },
+        "effectProvider": {
+          "effects": [
+            "effect:intelligent-might"
+          ]
+        }
+      }
+    },
+    {
+      "id": "definition:intelligence-scroll",
+      "name": "Scroll of Temporary Intelligence",
+      "components": {
+        "consumable": {
+          "effectDefinitionId": "effect:temporary-intelligence"
+        }
+      }
+    }
+  ],
+  "entities": [
+    {
+      "id": "character:alice",
+      "definitionId": "definition:adventurer",
+      "components": {
+        "identity": {
+          "name": "Alice"
+        },
+        "attributes": {
+          "strength": 10,
+          "intelligence": 12
+        },
+        "equipment": {}
+      }
+    },
+    {
+      "id": "item:ring-42",
+      "definitionId": "definition:ring-of-might",
+      "components": {
+        "ownership": {
+          "ownerId": "character:alice"
+        }
+      }
+    },
+    {
+      "id": "item:scroll-17",
+      "definitionId": "definition:intelligence-scroll",
+      "components": {
+        "ownership": {
+          "ownerId": "character:alice"
+        }
+      }
+    },
+    {
+      "id": "item:scroll-18",
+      "definitionId": "definition:intelligence-scroll",
+      "components": {
+        "ownership": {
+          "ownerId": "character:alice"
+        }
+      }
+    }
+  ],
+  "effectDefinitions": [
+    {
+      "id": "effect:intelligent-might",
+      "conditions": [
+        {
+          "id": "equipped",
+          "version": 1,
+          "parameters": {}
+        },
+        {
+          "id": "attribute-threshold",
+          "version": 1,
+          "parameters": {
+            "attribute": "intelligence",
+            "minimum": 13
+          }
+        }
+      ],
+      "contributions": [
+        {
+          "id": "multiply-attribute",
+          "version": 1,
+          "parameters": {
+            "attribute": "strength",
+            "factor": 1.1
+          }
+        }
+      ]
+    },
+    {
+      "id": "effect:temporary-intelligence",
+      "conditions": [],
+      "contributions": [
+        {
+          "id": "multiply-attribute",
+          "version": 1,
+          "parameters": {
+            "attribute": "intelligence",
+            "factor": 1.1
+          }
+        }
+      ],
+      "lifetime": {
+        "id": "duration",
+        "version": 1,
+        "parameters": {
+          "seconds": 300
+        }
+      }
+    }
+  ],
+  "effectInstances": [
+    {
+      "id": "effect:ring-42",
+      "definitionId": "effect:intelligent-might",
+      "sourceId": "item:ring-42",
+      "targetId": "character:alice",
+      "createdAt": 0,
+      "state": {}
+    }
+  ]
+}
