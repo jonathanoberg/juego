@@ -1,0 +1,46 @@
+# RPG Architecture Decisions
+
+Architecture decision record. Dates indicate when decisions or deferrals were recorded. Rows labeled provisional describe prototype choices rather than final gameplay policy. The maintained project copy is `docs/architecture-decisions.md` in the Juego repository.
+
+| Decision | Reason | Date |
+| --- | --- | --- |
+| Build for a multiplayer RPG with modest scale; prioritize adaptation and content expansion. | The initial architecture should support new quests, spells, and character mechanics without optimizing prematurely for massive scale. | 2026-10-08 |
+| Launch with text play and keep the world engine independent of presentation. | Text, browser plug-in, and video game interfaces should share the same world state and gameplay actions. | 2026-10-08 |
+| Represent characters, items, rooms, and quests as entities with stable identities. | A common identity model supports references and relationships across different types of content. | 2026-10-08 |
+| Compose entities from extensible, structured components. | New capabilities can be added without expanding a fixed character or item schema for every mechanic; defined component structures support validation. | 2026-10-08 |
+| Separate reusable content definitions from individual world instances. | Many objects can share a definition while instances hold unique ownership, durability, inscriptions, or other state. | 2026-10-08 |
+| Model effects as first-class definitions with identities. | Conditions, contributions, and lifetimes can be described and reused independently of the items or spells that supply them. | 2026-10-08 |
+| Create effect instances that identify their definition, source, target, creation time, and instance state. | Individual applications need their own expiration, charges, and provenance even when they share behavior code. | 2026-10-08 |
+| Separate an effect's attachment from its current activation. | A worn ring can remain attached while inactive, then become active when its intelligence requirement is met. | 2026-10-08 |
+| Keep an item separate from the effect it creates. | Consuming a scroll can remove the item while its temporary effect continues to exist. | 2026-10-08 |
+| Represent behavior code as addressable, versioned modules referenced by the model. | Unique mechanics can be introduced as new modules, and explicit versions identify the implementation used by a definition. | 2026-10-08 |
+| Pass parameters to shared behavior modules rather than copying code into every instance. | Common mechanics such as attribute thresholds and multipliers can be reused with different values. | 2026-10-08 |
+| Give behavior modules explicit roles: condition, contribution, action, and lifetime. | Defined interfaces distinguish applicability, proposed effective-state changes, intentional world transitions, and effect duration. | 2026-10-08 |
+| Store mutable per-instance state outside shared behavior modules. | Multiple applications can share implementation code while retaining different targets, expiration times, and charges. | 2026-10-08 |
+| Keep base facts separate from derived effective state. | Temporary modifiers should not overwrite original attributes; effective values can later be cached without becoming the authoritative base facts. | 2026-10-08 |
+| Preserve effect provenance through source and target references. | The engine can explain attribute changes and identify effects associated with an item or action. | 2026-10-08 |
+| Use the ring-and-scroll scenario as a reference example. | Base strength 10 and intelligence 12; an equipped ring grants 10% strength at intelligence >= 13; a temporary 10% intelligence effect yields intelligence 13.2 and strength 11 if fractional values are retained. | 2026-10-08 |
+| Defer rounding, stacking, dependency evaluation, ordering, and cycle handling. | These are evaluation rules to design separately; rounding must be explicit because it can change threshold activation. | 2026-10-08 |
+| Defer the development language and behavior execution runtime. | Go and TypeScript/Node remain candidates; the model should not assume a particular runtime yet. | 2026-10-08 |
+| Defer persistence and physical storage of behavior implementations. | Logical structure can be established before choosing a database or whether modules are stored directly in the model or referenced from a code registry. | 2026-10-08 |
+
+| Treat an entity as the world instance; do not introduce a separate entityInstance type. | Definitions hold reusable templates; entities hold identities and current base state, avoiding two overlapping instance concepts. | 2026-10-08 |
+| Give behaviors a supplied read-only world view and explicit inputs, with structured results. | Modules stay independent of persistence and presentation; the engine can validate, explain, and apply outcomes. Prototype action methods still mutate validated in-memory state directly. | 2026-10-08 |
+| Separate condition failure from behavior execution failure. | A legitimate inactive effect must be distinguishable from broken code or invalid content; prototype execution failures throw errors. | 2026-10-08 |
+| Supply simulation time through the behavior context. | Effect lifetimes and progression timestamps do not depend on a module reading the wall clock; controlled randomness is deferred until needed. | 2026-10-08 |
+| Use TypeScript interfaces and Node.js for the initial scaffold; keep core/game separate from prototyping. | The prototype tests the model without committing the final production language or promoting the limited evaluator into the core contract. | 2026-10-08 |
+| Represent classes and spells as reusable definitions with typed components. | New class and spell content fits the existing definition system without introducing separate identity mechanisms. | 2026-10-08 |
+| Store class membership and progression on the character, independently of its entity definition. | Alice can be an adventurer entity and a Sword Wizard; class progression does not require replacing her entity template. | 2026-10-08 |
+| Keep class spell offerings and character spell selections separate. | Eligibility belongs to reusable class rules, while individual choices belong to character state. | 2026-10-08 |
+| Describe class spell offerings with minimum class levels and prerequisite spell references. | Classes can vary spell availability through content data; sample names and level gates are illustrative rather than settled balance decisions. | 2026-10-08 |
+| Derive current spell-learning eligibility rather than storing a duplicate eligibility list. | Eligibility responds to levels and selections without maintaining a second mutable representation. | 2026-10-08 |
+| Record current class level and achieved-level history using simulation timestamps. | The model captures both current progression and which levels were achieved; sample historical timestamps are placeholders. | 2026-10-08 |
+| Record each spell selection with its learning time, class level at learning, and separate mastery rank. | Knowing a spell, class advancement, and spell mastery represent different dimensions of progression. | 2026-10-08 |
+| Reference versioned behavior modules for class equipment restrictions; store armor categories on item definitions. | A reusable category condition permits robes and rejects plate without hard-coding Sword Wizard identity into equipment handling. | 2026-10-08 |
+| Keep equipment slots separate and retain equipped items in owned inventory. | Finger and body equipment can coexist, and wearing an item does not change its ownership. | 2026-10-08 |
+| Validate equipment and learning actions before changing world state. | Rejected plate armor, unavailable spells, and duplicate learning must leave existing state intact. | 2026-10-08 |
+| Allow multiple class progression tracks in the data shape; defer full multiclass rules. | The model leaves room for expansion without claiming that advancement, shared spells, or conflicting permissions are already resolved. | 2026-10-08 |
+| Provisional: combine class equipment rules with all-of semantics and evaluate them when equipping. | This is sufficient for the single-class prototype. Conflict policies and revalidation after class or rule changes remain open. | 2026-10-08 |
+| Provisional: retain fractional attributes, compound multipliers, resolve dependencies on demand, and reject cycles. | These choices make the reference scenario runnable without establishing final rounding, stacking, or general cyclic-evaluation rules. | 2026-10-08 |
+| Defer progression economy and spell execution mechanics. | Experience points, level costs, selection budgets, mastery advancement, spell casting, and respecialization need separate design; prototype level advancement is an admin operation. | 2026-10-08 |
+| Defer a generic action executor, full schema validation, behavior registry, and module sandboxing. | Core interfaces describe the intended boundary, while the prototype uses trusted fixtures, parameter checks, and a limited dispatcher. | 2026-10-08 |

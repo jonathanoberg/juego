@@ -2,6 +2,8 @@
 
 Initial TypeScript scaffold for a multiplayer RPG with presentation-independent gameplay.
 
+Architecture decisions: [docs/architecture-decisions.md](docs/architecture-decisions.md).
+
 ## Run
 
 Node.js 24 or newer is required. The prototype and tests run directly through Node's TypeScript stripping, without installing dependencies:
