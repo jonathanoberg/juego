@@ -1,0 +1,16 @@
+{
+  "id": "personality:flamebringer",
+  "version": 1,
+  "name": "Flamebringer",
+  "narrative": "A boastful, impatient sword who delights in fire and dramatic victories. He respects decisive wielders, dislikes prolonged inactivity, and masks insecurity with bravado.",
+  "initialDisposition": { "impatience": 70, "enthusiasm": 80 },
+  "preferences": [
+    { "subject": { "tag": "icy" }, "attitude": "hostile" },
+    { "subject": { "tag": "fire-aligned" }, "attitude": "friendly" }
+  ],
+  "catchphrases": ["Consider yourself thoroughly warmed.", "Less talking. More scorching.", "I was forged for this."],
+  "behaviors": [
+    { "id": "react-to-preferred-target", "version": 1, "parameters": { "tag": "icy", "affinityGain": 5 } },
+    { "id": "inactivity-resentment", "version": 1, "parameters": { "intervalSeconds": 60, "gain": 2 } }
+  ]
+}

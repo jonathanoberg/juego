@@ -69,3 +69,5 @@ export type { ClassDefinitionComponent, ClassProgress, ProgressionComponent, Spe
 export type { PhysicalComponent, ContainerComponent, Placement, AdmissionBehavior, AdmissionContext } from './inventory.ts';
 
 export type { AttackInput, WeaponComponent, AttackModifier, AttackOutcome, AttackResult, AttackBehavior, AttackContributionBehavior } from './combat.ts';
+
+export type { PersonalityDefinition, PersonalityState, Relationship, Memory, Conversation, DialogueContext, DialogueAdapter, WorldEvent } from './personality.ts';

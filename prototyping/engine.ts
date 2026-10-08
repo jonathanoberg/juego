@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import fixture from './fixtures/world.json' with { type: 'json' };
 import type { Entity, Definition, EffectDefinition, EffectInstance, BehaviorContext, WorldReader, JsonValue, ClassDefinitionComponent, ClassProgress, ProgressionComponent, SpellAvailability, ArmorComponent, EquippableComponent, WorldChange, RandomSource } from '../core/game/index.ts';
 import { equipped, threshold, multiply, duration, allowedArmor, descriptionFragment } from './behaviors.ts';
@@ -16,6 +17,8 @@ export class PrototypeWorld implements WorldReader {
   now = 0;
   private random: RandomSource;
   private nextEffectId = 1;
+  private eventLog: import('../core/game/personality.ts').WorldEvent[] = [];
+  events() { return structuredClone(this.eventLog); }
   constructor(input: PrototypeFixture = JSON.parse(JSON.stringify(fixture)) as PrototypeFixture, privateRandom: RandomSource = { next: () => Math.random() }) {
     this.random = privateRandom;
     // Trusted checked-in fixture. External JSON will need runtime schema validation.
@@ -163,7 +166,10 @@ export class PrototypeWorld implements WorldReader {
     }
     const result = swordAttack.execute(ctx, {}, input, modifiers);
     if (!result.accepted) throw new Error(result.reason);
+    const traits = this.component(input.targetId, 'traits') as { tags?: string[] } | undefined;
+    const facts = { targetTags: [...(traits?.tags ?? [])], hit: result.outcome.hit, damage: result.outcome.damage };
     this.commit(result.changes);
+    this.eventLog.push({ id: `event:attack:${randomUUID()}`, type: 'attack-resolved', at: this.now, actorId: input.actorId, weaponId: input.weaponId, targetId: input.targetId, facts });
     return result.outcome;
   }
   activateSwordFlame(actorId: string, weaponId: string) {

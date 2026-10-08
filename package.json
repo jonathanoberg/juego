@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit",
     "prototype:status": "node prototyping/status-demo.ts",
     "prototype:inventory": "node prototyping/inventory-demo.ts",
-    "prototype:combat": "node prototyping/combat-demo.ts"
+    "prototype:combat": "node prototyping/combat-demo.ts",
+    "prototype:personality": "node prototyping/personality-demo.ts"
   },
   "devDependencies": {
     "typescript": "^5.9.3",
