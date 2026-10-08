@@ -23,7 +23,6 @@ Architecture decision record. Dates indicate when decisions or deferrals were re
 | Defer rounding, stacking, dependency evaluation, ordering, and cycle handling. | These are evaluation rules to design separately; rounding must be explicit because it can change threshold activation. | 2026-10-08 |
 | Defer the development language and behavior execution runtime. | Go and TypeScript/Node remain candidates; the model should not assume a particular runtime yet. | 2026-10-08 |
 | Defer persistence and physical storage of behavior implementations. | Logical structure can be established before choosing a database or whether modules are stored directly in the model or referenced from a code registry. | 2026-10-08 |
-
 | Treat an entity as the world instance; do not introduce a separate entityInstance type. | Definitions hold reusable templates; entities hold identities and current base state, avoiding two overlapping instance concepts. | 2026-10-08 |
 | Give behaviors a supplied read-only world view and explicit inputs, with structured results. | Modules stay independent of persistence and presentation; the engine can validate, explain, and apply outcomes. Prototype action methods still mutate validated in-memory state directly. | 2026-10-08 |
 | Separate condition failure from behavior execution failure. | A legitimate inactive effect must be distinguishable from broken code or invalid content; prototype execution failures throw errors. | 2026-10-08 |
