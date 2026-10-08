@@ -71,3 +71,5 @@ export type { PhysicalComponent, ContainerComponent, Placement, AdmissionBehavio
 export type { AttackInput, WeaponComponent, AttackModifier, AttackOutcome, AttackResult, AttackBehavior, AttackContributionBehavior } from './combat.ts';
 
 export type { PersonalityDefinition, PersonalityState, Relationship, Memory, Conversation, DialogueContext, DialogueAdapter, WorldEvent } from './personality.ts';
+
+export type { ActorComponent, CreatureComponent, GroupComponent, GroupMembership, SpawnRecipe, RoleDefinitionComponent, ActorRoleComponent, CapabilityComponent } from './groups.ts';

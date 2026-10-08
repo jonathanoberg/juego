@@ -1,0 +1,154 @@
+{
+  "definitions": [
+    {
+      "id": "definition:adult-orc",
+      "name": "Adult Orc",
+      "components": {
+        "actor": {
+          "controller": "npc"
+        },
+        "creature": {
+          "speciesId": "species:orc",
+          "lifeStage": "adult"
+        },
+        "personalityProvider": {
+          "definitionId": "personality:orc-traveler",
+          "version": 1
+        }
+      }
+    },
+    {
+      "id": "definition:orc-child",
+      "name": "Orc Child",
+      "components": {
+        "actor": {
+          "controller": "npc"
+        },
+        "creature": {
+          "speciesId": "species:orc",
+          "lifeStage": "child"
+        },
+        "personalityProvider": {
+          "definitionId": "personality:orc-child",
+          "version": 1
+        }
+      }
+    },
+    {
+      "id": "definition:wandering-orc-tribe",
+      "name": "Wandering Orc Tribe",
+      "components": {
+        "group": {
+          "purpose": "Find a safe winter campsite",
+          "objectives": [
+            "Protect children",
+            "Trade for supplies"
+          ]
+        },
+        "personalityProvider": {
+          "definitionId": "personality:orc-tribe",
+          "version": 1
+        }
+      }
+    },
+    {
+      "id": "definition:hunting-party",
+      "name": "Hunting Party",
+      "components": {
+        "group": {
+          "purpose": "Gather food",
+          "objectives": [
+            "Return safely"
+          ]
+        }
+      }
+    },
+    {
+      "id": "role:orc-shaman",
+      "name": "Orc Shaman",
+      "components": {
+        "role": {
+          "capabilityIds": [
+            "spellcasting:orc-shaman"
+          ],
+          "membershipRole": "shaman"
+        }
+      }
+    }
+  ],
+  "personalities": [
+    {
+      "id": "personality:orc-traveler",
+      "version": 1,
+      "name": "Orc Traveler",
+      "narrative": "A cautious traveler who protects their family, respects fair trade, and has an individual memory.",
+      "initialDisposition": {
+        "caution": 60
+      },
+      "preferences": [],
+      "catchphrases": [
+        "We remember who helps us."
+      ],
+      "behaviors": []
+    },
+    {
+      "id": "personality:orc-child",
+      "version": 1,
+      "name": "Orc Child",
+      "narrative": "Curious and wary around strangers; looks to trusted adults for guidance.",
+      "initialDisposition": {
+        "caution": 60
+      },
+      "preferences": [],
+      "catchphrases": [
+        "We remember who helps us."
+      ],
+      "behaviors": []
+    },
+    {
+      "id": "personality:orc-tribe",
+      "version": 1,
+      "name": "Wandering Orc Tribe",
+      "narrative": "A cautious community that fiercely protects its children and seeks a safe winter home.",
+      "initialDisposition": {
+        "caution": 60
+      },
+      "preferences": [],
+      "catchphrases": [
+        "We remember who helps us."
+      ],
+      "behaviors": []
+    }
+  ],
+  "recipe": {
+    "id": "spawn:wandering-orc-tribe",
+    "groupDefinitionId": "definition:wandering-orc-tribe",
+    "members": [
+      {
+        "definitionId": "definition:adult-orc",
+        "count": {
+          "minimum": 2,
+          "maximum": 7
+        }
+      },
+      {
+        "definitionId": "definition:orc-child",
+        "count": {
+          "minimum": 3,
+          "maximum": 10
+        }
+      }
+    ],
+    "roleAssignments": [
+      {
+        "roleDefinitionId": "role:orc-shaman",
+        "eligible": {
+          "speciesId": "species:orc",
+          "lifeStage": "adult"
+        },
+        "probabilityPerCandidate": 0.2,
+        "maximumCount": 1
+      }
+    ]
+  }
+}

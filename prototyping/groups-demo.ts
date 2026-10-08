@@ -1,0 +1,12 @@
+import { groupFixture } from './groups-scenario.ts';
+import { spawnGroup, PrototypeGroups } from './groups.ts';
+const data = groupFixture(); data.recipe.roleAssignments[0].probabilityPerCandidate = 1;
+const result = spawnGroup(data.recipe, 'group:ash-tooth', 'Ash Tooth Tribe', data.definitions, data.personalities, { next: () => .5 });
+const party = { id: 'group:hunt', definitionId: 'definition:hunting-party', components: {} };
+const groups = new PrototypeGroups([...result.entities, party], data.definitions, result.memberships);
+console.log('Ash Tooth Tribe:', result.entities.slice(1).map(e => ({ id: e.id, definition: e.definitionId, roles: e.components.actorRoles })));
+const shaman = result.memberships.find(m => m.roles.includes('shaman'))!.memberId;
+groups.join({ groupId: party.id, memberId: shaman, roles: ['guide'] });
+console.log('Shaman memberships:', groups.groupsOf(shaman));
+groups.leave(result.entities[0].id, shaman);
+console.log('Training after leaving tribe:', groups.entity(shaman)?.components.capabilities);
