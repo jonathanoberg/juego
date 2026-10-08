@@ -29,6 +29,114 @@
           "effectDefinitionId": "effect:temporary-intelligence"
         }
       }
+    },
+    {
+      "id": "class:sword-wizard",
+      "name": "Sword Wizard",
+      "components": {
+        "class": {
+          "maximumLevel": 20,
+          "spellOptions": [
+            {
+              "spellDefinitionId": "spell:light",
+              "minimumClassLevel": 1,
+              "prerequisiteSpellIds": []
+            },
+            {
+              "spellDefinitionId": "spell:enchanted-blade",
+              "minimumClassLevel": 2,
+              "prerequisiteSpellIds": []
+            },
+            {
+              "spellDefinitionId": "spell:ward",
+              "minimumClassLevel": 3,
+              "prerequisiteSpellIds": [
+                "spell:light"
+              ]
+            },
+            {
+              "spellDefinitionId": "spell:flame",
+              "minimumClassLevel": 5,
+              "prerequisiteSpellIds": []
+            }
+          ],
+          "equipmentRules": [
+            {
+              "id": "allowed-armor-categories",
+              "version": 1,
+              "parameters": {
+                "allowedCategories": [
+                  "robes"
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "spell:light",
+      "name": "Light",
+      "components": {
+        "spell": {
+          "description": "Creates a small magical light."
+        }
+      }
+    },
+    {
+      "id": "spell:enchanted-blade",
+      "name": "Enchanted Blade",
+      "components": {
+        "spell": {
+          "description": "Infuses a sword with magic."
+        }
+      }
+    },
+    {
+      "id": "spell:ward",
+      "name": "Ward",
+      "components": {
+        "spell": {
+          "description": "Creates a protective magical ward."
+        }
+      }
+    },
+    {
+      "id": "spell:flame",
+      "name": "Flame",
+      "components": {
+        "spell": {
+          "description": "Calls forth magical fire."
+        }
+      }
+    },
+    {
+      "id": "definition:robes",
+      "name": "Wizard Robes",
+      "components": {
+        "equippable": {
+          "slots": [
+            "body"
+          ]
+        },
+        "armor": {
+          "category": "robes"
+        }
+      }
+    },
+    {
+      "id": "definition:plate",
+      "name": "Plate Armor",
+      "components": {
+        "equippable": {
+          "slots": [
+            "body"
+          ]
+        },
+        "armor": {
+          "category": "plate"
+        }
+      }
     }
   ],
   "entities": [
@@ -43,7 +151,43 @@
           "strength": 10,
           "intelligence": 12
         },
-        "equipment": {}
+        "equipment": {},
+        "progression": {
+          "classes": [
+            {
+              "classDefinitionId": "class:sword-wizard",
+              "level": 3,
+              "achievedLevels": [
+                {
+                  "level": 1,
+                  "achievedAt": 0
+                },
+                {
+                  "level": 2,
+                  "achievedAt": 0
+                },
+                {
+                  "level": 3,
+                  "achievedAt": 0
+                }
+              ],
+              "spellSelections": [
+                {
+                  "spellDefinitionId": "spell:light",
+                  "learnedAtClassLevel": 1,
+                  "learnedAt": 0,
+                  "masteryRank": 1
+                },
+                {
+                  "spellDefinitionId": "spell:enchanted-blade",
+                  "learnedAtClassLevel": 2,
+                  "learnedAt": 0,
+                  "masteryRank": 2
+                }
+              ]
+            }
+          ]
+        }
       }
     },
     {
@@ -67,6 +211,24 @@
     {
       "id": "item:scroll-18",
       "definitionId": "definition:intelligence-scroll",
+      "components": {
+        "ownership": {
+          "ownerId": "character:alice"
+        }
+      }
+    },
+    {
+      "id": "item:robes",
+      "definitionId": "definition:robes",
+      "components": {
+        "ownership": {
+          "ownerId": "character:alice"
+        }
+      }
+    },
+    {
+      "id": "item:plate",
+      "definitionId": "definition:plate",
       "components": {
         "ownership": {
           "ownerId": "character:alice"

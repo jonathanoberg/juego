@@ -54,3 +54,5 @@ export interface LifetimeResult { expired: boolean; nextCheckAt?: WorldTime; }
 export interface LifetimeBehavior<P> extends BehaviorMetadata {
   role: 'lifetime'; evaluate(context: BehaviorContext, parameters: Readonly<P>, instance: EffectInstanceView): LifetimeResult;
 }
+
+export type { ClassDefinitionComponent, ClassProgress, ProgressionComponent, SpellDefinitionComponent, SpellSelection, ArmorComponent, EquippableComponent, SpellAvailability } from './progression.ts';

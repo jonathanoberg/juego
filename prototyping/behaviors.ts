@@ -22,3 +22,11 @@ export const duration: LifetimeBehavior<{ seconds: number }> = {
     return { expired: ctx.now >= expiresAt, nextCheckAt: expiresAt };
   }
 };
+
+export const allowedArmor: ConditionBehavior<{ allowedCategories: string[]; category: string }> = {
+  id: 'allowed-armor-categories', version: 1, role: 'condition', parameterSchema: objectSchema,
+  evaluate(_ctx, p) {
+    const satisfied = p.allowedCategories.includes(p.category);
+    return { satisfied, reason: satisfied ? undefined : `Class does not allow armor category: ${p.category}` };
+  }
+};
