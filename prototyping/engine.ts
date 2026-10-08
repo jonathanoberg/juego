@@ -1,6 +1,8 @@
 import fixture from './fixtures/world.json' with { type: 'json' };
 import type { Entity, Definition, EffectDefinition, EffectInstance, BehaviorContext, WorldReader, JsonValue, ClassDefinitionComponent, ClassProgress, ProgressionComponent, SpellAvailability, ArmorComponent, EquippableComponent, WorldChange, RandomSource } from '../core/game/index.ts';
 import { equipped, threshold, multiply, duration, allowedArmor, descriptionFragment } from './behaviors.ts';
+import { PrototypeInventory } from './inventory.ts';
+import type { Placement } from '../core/game/inventory.ts';
 import { eatFood, cleanItem } from './status-actions.ts';
 export interface PrototypeFixture { entities: Entity[]; definitions: Definition[]; effectDefinitions: EffectDefinition[]; effectInstances: EffectInstance[]; }
 export class PrototypeWorld implements WorldReader {
@@ -16,7 +18,7 @@ export class PrototypeWorld implements WorldReader {
     this.random = privateRandom;
     // Trusted checked-in fixture. External JSON will need runtime schema validation.
     const data = structuredClone(input);
-    this.entities = data.entities;
+    this.entities = new PrototypeInventory(data.entities, data.definitions).snapshot();
     this.definitions = data.definitions;
     this.effectDefinitions = data.effectDefinitions;
     this.effects = data.effectInstances;
@@ -219,13 +221,27 @@ export class PrototypeWorld implements WorldReader {
         }
       }
     }
-    const equipment = this.component(actorId, 'equipment') as Record<string, JsonValue> | undefined;
-    this.requireEntity(actorId).components.equipment = { ...equipment, [selectedSlot]: itemId };
+    const occupied = this.component(actorId, 'equipment') as Record<string, JsonValue> | undefined;
+    const staged = new PrototypeInventory(this.entities, this.definitions);
+    if (typeof occupied?.[selectedSlot] === 'string' && occupied[selectedSlot] !== itemId) {
+      const moved = staged.move(actorId, occupied[selectedSlot] as string, { kind: 'carried', actorId });
+      this.entities = new PrototypeInventory(moved, this.definitions).move(actorId, itemId, { kind: 'equipped', actorId, slot: selectedSlot });
+    } else this.entities = staged.move(actorId, itemId, { kind: 'equipped', actorId, slot: selectedSlot });
   }
   unequip(actorId: string, slot = 'finger') {
     const equipment = this.component(actorId, 'equipment') as Record<string, JsonValue> | undefined;
-    const next = { ...equipment }; delete next[slot];
-    this.requireEntity(actorId).components.equipment = next;
+    const itemId = equipment?.[slot];
+    if (typeof itemId === 'string') this.moveItem(actorId, itemId, { kind: 'carried', actorId });
+  }
+  moveItem(actorId: string, itemId: string, destination: Placement) {
+    if (destination.kind === 'equipped') throw new Error('Use equip for equipment validation');
+    this.entities = new PrototypeInventory(this.entities, this.definitions).move(actorId, itemId, destination);
+  }
+  directContents(containerId: string, compartmentId?: string) {
+    return new PrototypeInventory(this.entities, this.definitions).directContents(containerId, compartmentId);
+  }
+  carriedInventory(actorId: string) {
+    return new PrototypeInventory(this.entities, this.definitions).carried(actorId);
   }
   readScroll(actorId: string, itemId: string) {
     const item = this.requireEntity(itemId);

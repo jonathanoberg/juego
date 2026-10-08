@@ -63,3 +63,5 @@ export interface LifetimeBehavior<P> extends BehaviorMetadata {
 }
 
 export type { ClassDefinitionComponent, ClassProgress, ProgressionComponent, SpellDefinitionComponent, SpellSelection, ArmorComponent, EquippableComponent, SpellAvailability } from './progression.ts';
+
+export type { PhysicalComponent, ContainerComponent, Placement, AdmissionBehavior, AdmissionContext } from './inventory.ts';

@@ -9,7 +9,8 @@
     "test": "node --test prototyping/*.test.ts",
     "prototype": "node prototyping/demo.ts",
     "typecheck": "tsc --noEmit",
-    "prototype:status": "node prototyping/status-demo.ts"
+    "prototype:status": "node prototyping/status-demo.ts",
+    "prototype:inventory": "node prototyping/inventory-demo.ts"
   },
   "devDependencies": {
     "typescript": "^5.9.3",

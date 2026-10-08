@@ -1,0 +1,475 @@
+{
+  "definitions": [
+    {
+      "id": "definition:scabbard",
+      "name": "Sword Scabbard",
+      "components": {
+        "physical": {
+          "sizeClass": "medium",
+          "weightClass": "bookweight",
+          "tags": [
+            "item",
+            "portable"
+          ]
+        },
+        "equippable": {
+          "slots": [
+            "belt"
+          ]
+        },
+        "container": {
+          "compartments": [
+            {
+              "id": "blade",
+              "rules": [
+                {
+                  "id": "entity-count",
+                  "version": 1,
+                  "parameters": {
+                    "maximum": 1
+                  }
+                },
+                {
+                  "id": "item-tags",
+                  "version": 1,
+                  "parameters": {
+                    "require": [
+                      "sword"
+                    ],
+                    "reject": []
+                  }
+                },
+                {
+                  "id": "maximum-length",
+                  "version": 1,
+                  "parameters": {
+                    "exclusiveMeters": 1
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "definition:backpack",
+      "name": "Small Backpack",
+      "components": {
+        "physical": {
+          "sizeClass": "medium",
+          "weightClass": "bookweight",
+          "tags": [
+            "item",
+            "portable"
+          ]
+        },
+        "container": {
+          "compartments": [
+            {
+              "id": "main",
+              "rules": [
+                {
+                  "id": "entity-count",
+                  "version": 1,
+                  "parameters": {
+                    "maximum": 10
+                  }
+                },
+                {
+                  "id": "item-tags",
+                  "version": 1,
+                  "parameters": {
+                    "require": [
+                      "portable"
+                    ],
+                    "reject": [
+                      "living"
+                    ]
+                  }
+                },
+                {
+                  "id": "size-budget",
+                  "version": 1,
+                  "parameters": {
+                    "capacity": 20,
+                    "costs": {
+                      "extra-small": 1,
+                      "small": 2,
+                      "medium": 4
+                    }
+                  }
+                },
+                {
+                  "id": "burden-budget",
+                  "version": 1,
+                  "parameters": {
+                    "capacity": 20
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "definition:pouch",
+      "name": "Pouch",
+      "components": {
+        "physical": {
+          "sizeClass": "small",
+          "weightClass": "featherweight",
+          "tags": [
+            "item",
+            "portable"
+          ]
+        },
+        "container": {
+          "compartments": [
+            {
+              "id": "main",
+              "rules": [
+                {
+                  "id": "entity-count",
+                  "version": 1,
+                  "parameters": {
+                    "maximum": 10
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "definition:sword",
+      "name": "Short Sword",
+      "components": {
+        "physical": {
+          "sizeClass": "medium",
+          "weightClass": "bookweight",
+          "tags": [
+            "item",
+            "portable",
+            "sword"
+          ],
+          "dimensions": {
+            "lengthMeters": 0.85
+          }
+        }
+      }
+    },
+    {
+      "id": "definition:long-sword",
+      "name": "Long Sword",
+      "components": {
+        "physical": {
+          "sizeClass": "medium",
+          "weightClass": "bookweight",
+          "tags": [
+            "item",
+            "portable",
+            "sword"
+          ],
+          "dimensions": {
+            "lengthMeters": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "definition:unknown-sword",
+      "name": "Sword of Unknown Length",
+      "components": {
+        "physical": {
+          "sizeClass": "medium",
+          "weightClass": "bookweight",
+          "tags": [
+            "item",
+            "portable",
+            "sword"
+          ]
+        }
+      }
+    },
+    {
+      "id": "definition:coin",
+      "name": "Coin",
+      "components": {
+        "physical": {
+          "sizeClass": "extra-small",
+          "weightClass": "featherweight",
+          "tags": [
+            "item",
+            "portable"
+          ]
+        }
+      }
+    },
+    {
+      "id": "definition:book",
+      "name": "Book",
+      "components": {
+        "physical": {
+          "sizeClass": "small",
+          "weightClass": "bookweight",
+          "tags": [
+            "item",
+            "portable"
+          ]
+        }
+      }
+    },
+    {
+      "id": "definition:anvil",
+      "name": "Anvil",
+      "components": {
+        "physical": {
+          "sizeClass": "medium",
+          "weightClass": "anvilweight",
+          "tags": [
+            "item",
+            "portable"
+          ]
+        }
+      }
+    },
+    {
+      "id": "definition:car",
+      "name": "Car",
+      "components": {
+        "physical": {
+          "sizeClass": "huge",
+          "weightClass": "anvilweight",
+          "tags": [
+            "vehicle"
+          ]
+        }
+      }
+    },
+    {
+      "id": "definition:fox",
+      "name": "Wild Fox",
+      "components": {
+        "physical": {
+          "sizeClass": "small",
+          "weightClass": "bookweight",
+          "tags": [
+            "animal",
+            "living",
+            "portable"
+          ]
+        }
+      }
+    }
+  ],
+  "entities": [
+    {
+      "id": "item:scabbard",
+      "definitionId": "definition:scabbard",
+      "components": {
+        "ownership": {
+          "ownerId": "character:alice"
+        },
+        "placement": {
+          "kind": "carried",
+          "actorId": "character:alice"
+        }
+      }
+    },
+    {
+      "id": "item:backpack",
+      "definitionId": "definition:backpack",
+      "components": {
+        "ownership": {
+          "ownerId": "character:alice"
+        },
+        "placement": {
+          "kind": "carried",
+          "actorId": "character:alice"
+        }
+      }
+    },
+    {
+      "id": "item:pouch",
+      "definitionId": "definition:pouch",
+      "components": {
+        "ownership": {
+          "ownerId": "character:alice"
+        },
+        "placement": {
+          "kind": "carried",
+          "actorId": "character:alice"
+        }
+      }
+    },
+    {
+      "id": "item:sword",
+      "definitionId": "definition:sword",
+      "components": {
+        "ownership": {
+          "ownerId": "character:alice"
+        },
+        "placement": {
+          "kind": "carried",
+          "actorId": "character:alice"
+        }
+      }
+    },
+    {
+      "id": "item:long-sword",
+      "definitionId": "definition:long-sword",
+      "components": {
+        "ownership": {
+          "ownerId": "character:alice"
+        },
+        "placement": {
+          "kind": "carried",
+          "actorId": "character:alice"
+        }
+      }
+    },
+    {
+      "id": "item:unknown-sword",
+      "definitionId": "definition:unknown-sword",
+      "components": {
+        "ownership": {
+          "ownerId": "character:alice"
+        },
+        "placement": {
+          "kind": "carried",
+          "actorId": "character:alice"
+        }
+      }
+    },
+    {
+      "id": "item:coin-1",
+      "definitionId": "definition:coin",
+      "components": {
+        "ownership": {
+          "ownerId": "character:alice"
+        },
+        "placement": {
+          "kind": "carried",
+          "actorId": "character:alice"
+        }
+      }
+    },
+    {
+      "id": "item:coin-2",
+      "definitionId": "definition:coin",
+      "components": {
+        "ownership": {
+          "ownerId": "character:alice"
+        },
+        "placement": {
+          "kind": "carried",
+          "actorId": "character:alice"
+        }
+      }
+    },
+    {
+      "id": "item:coin-3",
+      "definitionId": "definition:coin",
+      "components": {
+        "ownership": {
+          "ownerId": "character:alice"
+        },
+        "placement": {
+          "kind": "carried",
+          "actorId": "character:alice"
+        }
+      }
+    },
+    {
+      "id": "item:book",
+      "definitionId": "definition:book",
+      "components": {
+        "ownership": {
+          "ownerId": "character:alice"
+        },
+        "placement": {
+          "kind": "carried",
+          "actorId": "character:alice"
+        }
+      }
+    },
+    {
+      "id": "item:anvil",
+      "definitionId": "definition:anvil",
+      "components": {
+        "ownership": {
+          "ownerId": "character:alice"
+        },
+        "placement": {
+          "kind": "carried",
+          "actorId": "character:alice"
+        }
+      }
+    },
+    {
+      "id": "item:car",
+      "definitionId": "definition:car",
+      "components": {
+        "ownership": {
+          "ownerId": "character:alice"
+        },
+        "placement": {
+          "kind": "carried",
+          "actorId": "character:alice"
+        }
+      }
+    },
+    {
+      "id": "item:fox",
+      "definitionId": "definition:fox",
+      "components": {
+        "ownership": {
+          "ownerId": "character:alice"
+        },
+        "placement": {
+          "kind": "carried",
+          "actorId": "character:alice"
+        }
+      }
+    }
+  ],
+  "robesContainer": {
+    "compartments": [
+      {
+        "id": "left-pocket",
+        "rules": [
+          {
+            "id": "size-budget",
+            "version": 1,
+            "parameters": {
+              "capacity": 2,
+              "costs": {
+                "extra-small": 1,
+                "small": 2
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "right-pocket",
+        "rules": [
+          {
+            "id": "size-budget",
+            "version": 1,
+            "parameters": {
+              "capacity": 2,
+              "costs": {
+                "extra-small": 1,
+                "small": 2
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
