@@ -1,6 +1,7 @@
 import fixture from './fixtures/world.json' with { type: 'json' };
-import type { Entity, Definition, EffectDefinition, EffectInstance, BehaviorContext, WorldReader, JsonValue, ClassDefinitionComponent, ClassProgress, ProgressionComponent, SpellAvailability, ArmorComponent, EquippableComponent } from '../core/game/index.ts';
-import { equipped, threshold, multiply, duration, allowedArmor } from './behaviors.ts';
+import type { Entity, Definition, EffectDefinition, EffectInstance, BehaviorContext, WorldReader, JsonValue, ClassDefinitionComponent, ClassProgress, ProgressionComponent, SpellAvailability, ArmorComponent, EquippableComponent, WorldChange, RandomSource } from '../core/game/index.ts';
+import { equipped, threshold, multiply, duration, allowedArmor, descriptionFragment } from './behaviors.ts';
+import { eatFood, cleanItem } from './status-actions.ts';
 export interface PrototypeFixture { entities: Entity[]; definitions: Definition[]; effectDefinitions: EffectDefinition[]; effectInstances: EffectInstance[]; }
 export class PrototypeWorld implements WorldReader {
   private entities: Entity[];
@@ -9,7 +10,10 @@ export class PrototypeWorld implements WorldReader {
   private effects: EffectInstance[];
   private evaluating = new Set<string>();
   now = 0;
-  constructor(input: PrototypeFixture = JSON.parse(JSON.stringify(fixture)) as PrototypeFixture) {
+  private random: RandomSource;
+  private nextEffectId = 1;
+  constructor(input: PrototypeFixture = JSON.parse(JSON.stringify(fixture)) as PrototypeFixture, privateRandom: RandomSource = { next: () => Math.random() }) {
+    this.random = privateRandom;
     // Trusted checked-in fixture. External JSON will need runtime schema validation.
     const data = structuredClone(input);
     this.entities = data.entities;
@@ -47,34 +51,104 @@ export class PrototypeWorld implements WorldReader {
         const d = this.effectDefinitions.find(d => d.id === e.definitionId);
         if (!d) throw new Error(`Unknown effect: ${e.definitionId}`);
         const ctx = this.context(e);
-        if (d.lifetime) {
-          const ref = d.lifetime;
-          if (ref.id !== duration.id || ref.version !== duration.version) throw new Error('Unknown lifetime behavior');
-          const seconds = ref.parameters.seconds;
-          if (typeof seconds !== 'number' || seconds < 0) throw new Error('Invalid duration');
-          if (duration.evaluate(ctx, { seconds }, e).expired) continue;
-        }
+        if (this.expired(e, d)) continue;
         // Select contributions first: irrelevant effects must not introduce false cycles.
         for (const ref of d.contributions) {
+          if (ref.id === descriptionFragment.id && ref.version === descriptionFragment.version) continue;
           if (ref.id !== multiply.id || ref.version !== multiply.version) throw new Error('Unknown contribution behavior');
           const { attribute, factor } = ref.parameters;
           if (typeof attribute !== 'string' || typeof factor !== 'number' || !Number.isFinite(factor)) throw new Error('Invalid multiplier');
           if (attribute !== name) continue;
-          const active = d.conditions.every(ref => {
-            if (ref.version !== 1) throw new Error('Unknown condition version');
-            if (ref.id === equipped.id) return equipped.evaluate(ctx, {}).satisfied;
-            if (ref.id === threshold.id) {
-              const { attribute, minimum } = ref.parameters;
-              if (typeof attribute !== 'string' || typeof minimum !== 'number') throw new Error('Invalid threshold');
-              return threshold.evaluate(ctx, { attribute, minimum }).satisfied;
-            }
-            throw new Error(`Unknown condition: ${ref.id}`);
-          });
+          const active = this.predicatesSatisfied(e, d);
           if (active) for (const modifier of multiply.evaluate(ctx, { attribute, factor }).modifiers) value *= modifier.value;
         }
       }
       return value;
     } finally { this.evaluating.delete(key); }
+  }
+  private expired(e: EffectInstance, d: EffectDefinition): boolean {
+    if (!d.lifetime) return false;
+    const ref = d.lifetime;
+    if (ref.id !== duration.id || ref.version !== duration.version) throw new Error('Unknown lifetime behavior');
+    const seconds = ref.parameters.seconds;
+    if (typeof seconds !== 'number' || !Number.isFinite(seconds) || seconds < 0) throw new Error('Invalid duration');
+    return duration.evaluate(this.context(e), { seconds }, e).expired;
+  }
+  private predicatesSatisfied(e: EffectInstance, d: EffectDefinition): boolean {
+    const ctx = this.context(e);
+    return d.predicates.every(ref => {
+      if (ref.version !== 1) throw new Error('Unknown predicate version');
+      if (ref.id === equipped.id) return equipped.evaluate(ctx, {}).satisfied;
+      if (ref.id === threshold.id) {
+        const { attribute, minimum } = ref.parameters;
+        if (typeof attribute !== 'string' || typeof minimum !== 'number') throw new Error('Invalid threshold');
+        return threshold.evaluate(ctx, { attribute, minimum }).satisfied;
+      }
+      throw new Error(`Unknown predicate: ${ref.id}`);
+    });
+  }
+  effectDefinition(id: string) {
+    const d = this.effectDefinitions.find(d => d.id === id);
+    return d && { id: d.id, tags: structuredClone(d.tags ?? []) };
+  }
+  effectsOn(id: string): EffectInstance[] {
+    this.requireEntity(id);
+    return structuredClone(this.effects.filter(e => {
+      if (e.targetId !== id) return false;
+      const d = this.effectDefinitions.find(d => d.id === e.definitionId);
+      if (!d) throw new Error(`Unknown effect: ${e.definitionId}`);
+      return !this.expired(e, d) && this.predicatesSatisfied(e, d);
+    }));
+  }
+  describe(id: string): string {
+    const entity = this.requireEntity(id);
+    const base = this.definitions.find(d => d.id === entity.definitionId)?.name ?? id;
+    const fragments: string[] = [];
+    for (const e of this.effectsOn(id)) {
+      const d = this.effectDefinitions.find(d => d.id === e.definitionId)!;
+      for (const ref of d.contributions) {
+        if (ref.id === multiply.id && ref.version === multiply.version) continue;
+        if (ref.id !== descriptionFragment.id || ref.version !== descriptionFragment.version) throw new Error('Unknown description contribution');
+        const text = ref.parameters.text;
+        if (typeof text !== 'string') throw new Error('Invalid description fragment');
+        for (const fragment of descriptionFragment.evaluate(this.context(e), { text }).descriptions ?? []) fragments.push(fragment.text);
+      }
+    }
+    return [base, ...new Set(fragments)].join(', ');
+  }
+  private commit(changes: WorldChange[]) {
+    // Stage all supported operations before swapping state. No callbacks during commit.
+    let entities = structuredClone(this.entities);
+    let effects = structuredClone(this.effects);
+    let nextId = this.nextEffectId;
+    for (const change of changes) {
+      if (change.kind === 'removeEffect') {
+        if (!effects.some(e => e.id === change.effectInstanceId)) throw new Error('Missing effect to remove');
+        effects = effects.filter(e => e.id !== change.effectInstanceId);
+      } else if (change.kind === 'consumeItem') {
+        if (change.quantity !== 1 || !entities.some(e => e.id === change.entityId)) throw new Error('Invalid consumption');
+        entities = entities.filter(e => e.id !== change.entityId);
+      } else if (change.kind === 'attachEffect') {
+        if (!this.effectDefinitions.some(d => d.id === change.definitionId) || !entities.some(e => e.id === change.targetId)) throw new Error('Invalid effect attachment');
+        if (!this.entities.some(e => e.id === change.sourceId)) throw new Error('Missing effect source');
+        let id: string;
+        do { id = `effect:action:${nextId++}`; } while (effects.some(e => e.id === id));
+        effects.push({ id, definitionId: change.definitionId, sourceId: change.sourceId, targetId: change.targetId, createdAt: this.now, state: {} });
+      }
+    }
+    this.entities = entities; this.effects = effects; this.nextEffectId = nextId;
+  }
+  eat(actorId: string, foodId: string) {
+    this.requireEntity(actorId);
+    const result = eatFood.execute({ sourceId: foodId, targetId: actorId, now: this.now, world: this, random: this.random }, {}, {});
+    if (!result.accepted) throw new Error(result.reason);
+    this.commit(result.changes);
+  }
+  clean(actorId: string, soapId: string, itemId: string) {
+    this.requireEntity(actorId);
+    const result = cleanItem.execute({ sourceId: soapId, targetId: actorId, now: this.now, world: this }, {}, { itemId });
+    if (!result.accepted) throw new Error(result.reason);
+    this.commit(result.changes);
   }
   inventory(actorId: string) {
     return this.entities.filter(e => (e.components.ownership as Record<string, JsonValue> | undefined)?.ownerId === actorId)

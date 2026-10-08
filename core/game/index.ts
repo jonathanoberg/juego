@@ -7,7 +7,8 @@ export interface Entity { id: EntityId; definitionId: string; components: Compon
 export interface BehaviorReference { id: string; version: number; parameters: Record<string, JsonValue>; }
 export interface EffectDefinition {
   id: string;
-  conditions: BehaviorReference[]; // All must be satisfied.
+  tags?: string[];
+  predicates: BehaviorReference[]; // All must be satisfied.
   contributions: BehaviorReference[];
   lifetime?: BehaviorReference;
 }
@@ -18,7 +19,11 @@ export interface EffectInstance {
 export type ReadonlyJsonValue = null | boolean | number | string | readonly ReadonlyJsonValue[] | { readonly [key: string]: ReadonlyJsonValue };
 export interface EntityView { readonly id: EntityId; readonly definitionId: string; readonly components: Readonly<Record<string, ReadonlyJsonValue>>; }
 export interface EffectInstanceView { readonly id: string; readonly definitionId: string; readonly sourceId: EntityId; readonly targetId: EntityId; readonly createdAt: WorldTime; readonly state: Readonly<Record<string, ReadonlyJsonValue>>; }
+export interface EffectDefinitionView { readonly id: string; readonly tags?: readonly string[]; }
+export interface RandomSource { next(): number; } // Engine-supplied value in [0, 1).
 export interface WorldReader {
+  effectsOn(id: EntityId): readonly EffectInstanceView[]; // Currently active effects.
+  effectDefinition(id: string): EffectDefinitionView | undefined;
   entity(id: EntityId): EntityView | undefined;
   baseAttribute(id: EntityId, name: string): number;
   effectiveAttribute(id: EntityId, name: string): number;
@@ -26,26 +31,28 @@ export interface WorldReader {
 }
 export interface BehaviorContext {
   sourceId: EntityId; targetId: EntityId; effectInstanceId?: string;
-  now: WorldTime; world: WorldReader;
+  now: WorldTime; world: WorldReader; random?: RandomSource;
 }
 export interface BehaviorMetadata {
   id: string; version: number;
   parameterSchema: Record<string, JsonValue>; // JSON Schema; runtime validation is engine-owned.
 }
-export interface ConditionResult { satisfied: boolean; reason?: string; }
-export interface ConditionBehavior<P> extends BehaviorMetadata {
-  role: 'condition'; evaluate(context: BehaviorContext, parameters: Readonly<P>): ConditionResult;
+export interface PredicateResult { satisfied: boolean; reason?: string; }
+export interface PredicateBehavior<P> extends BehaviorMetadata {
+  role: 'predicate'; evaluate(context: BehaviorContext, parameters: Readonly<P>): PredicateResult;
 }
 export interface AttributeModifier {
   targetId: EntityId; attribute: string; operation: 'add' | 'multiply' | 'override'; value: number;
 }
-export interface ContributionResult { modifiers: AttributeModifier[]; }
+export interface DescriptionFragment { targetId: EntityId; text: string; }
+export interface ContributionResult { modifiers: AttributeModifier[]; descriptions?: DescriptionFragment[]; }
 export interface ContributionBehavior<P> extends BehaviorMetadata {
   role: 'contribution'; evaluate(context: BehaviorContext, parameters: Readonly<P>): ContributionResult;
 }
 export type WorldChange =
   | { kind: 'attachEffect'; definitionId: string; sourceId: EntityId; targetId: EntityId }
-  | { kind: 'consumeItem'; entityId: EntityId; quantity: number };
+  | { kind: 'consumeItem'; entityId: EntityId; quantity: number }
+  | { kind: 'removeEffect'; effectInstanceId: string };
 export type ActionResult = { accepted: false; reason: string } | { accepted: true; changes: WorldChange[] };
 export interface ActionBehavior<P, I> extends BehaviorMetadata {
   role: 'action'; execute(context: BehaviorContext, parameters: Readonly<P>, input: Readonly<I>): ActionResult;

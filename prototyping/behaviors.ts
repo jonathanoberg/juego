@@ -1,14 +1,14 @@
-import type { ConditionBehavior, ContributionBehavior, LifetimeBehavior } from '../core/game/index.ts';
+import type { PredicateBehavior, ContributionBehavior, LifetimeBehavior } from '../core/game/index.ts';
 const objectSchema = { type: 'object' };
-export const equipped: ConditionBehavior<Record<string, never>> = {
-  id: 'equipped', version: 1, role: 'condition', parameterSchema: objectSchema,
+export const equipped: PredicateBehavior<Record<string, never>> = {
+  id: 'equipped', version: 1, role: 'predicate', parameterSchema: objectSchema,
   evaluate(ctx) {
     const slots = ctx.world.component(ctx.targetId, 'equipment') as Readonly<Record<string, string>> | undefined;
     return { satisfied: Object.values(slots ?? {}).includes(ctx.sourceId) };
   }
 };
-export const threshold: ConditionBehavior<{ attribute: string; minimum: number }> = {
-  id: 'attribute-threshold', version: 1, role: 'condition', parameterSchema: objectSchema,
+export const threshold: PredicateBehavior<{ attribute: string; minimum: number }> = {
+  id: 'attribute-threshold', version: 1, role: 'predicate', parameterSchema: objectSchema,
   evaluate(ctx, p) { return { satisfied: ctx.world.effectiveAttribute(ctx.targetId, p.attribute) >= p.minimum }; }
 };
 export const multiply: ContributionBehavior<{ attribute: string; factor: number }> = {
@@ -23,10 +23,15 @@ export const duration: LifetimeBehavior<{ seconds: number }> = {
   }
 };
 
-export const allowedArmor: ConditionBehavior<{ allowedCategories: string[]; category: string }> = {
-  id: 'allowed-armor-categories', version: 1, role: 'condition', parameterSchema: objectSchema,
+export const allowedArmor: PredicateBehavior<{ allowedCategories: string[]; category: string }> = {
+  id: 'allowed-armor-categories', version: 1, role: 'predicate', parameterSchema: objectSchema,
   evaluate(_ctx, p) {
     const satisfied = p.allowedCategories.includes(p.category);
     return { satisfied, reason: satisfied ? undefined : `Class does not allow armor category: ${p.category}` };
   }
+};
+
+export const descriptionFragment: ContributionBehavior<{ text: string }> = {
+  id: 'description-fragment', version: 1, role: 'contribution', parameterSchema: objectSchema,
+  evaluate(ctx, p) { return { modifiers: [], descriptions: [{ targetId: ctx.targetId, text: p.text }] }; }
 };

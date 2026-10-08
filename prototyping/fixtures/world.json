@@ -239,7 +239,17 @@
   "effectDefinitions": [
     {
       "id": "effect:intelligent-might",
-      "conditions": [
+      "contributions": [
+        {
+          "id": "multiply-attribute",
+          "version": 1,
+          "parameters": {
+            "attribute": "strength",
+            "factor": 1.1
+          }
+        }
+      ],
+      "predicates": [
         {
           "id": "equipped",
           "version": 1,
@@ -253,21 +263,10 @@
             "minimum": 13
           }
         }
-      ],
-      "contributions": [
-        {
-          "id": "multiply-attribute",
-          "version": 1,
-          "parameters": {
-            "attribute": "strength",
-            "factor": 1.1
-          }
-        }
       ]
     },
     {
       "id": "effect:temporary-intelligence",
-      "conditions": [],
       "contributions": [
         {
           "id": "multiply-attribute",
@@ -284,7 +283,8 @@
         "parameters": {
           "seconds": 300
         }
-      }
+      },
+      "predicates": []
     }
   ],
   "effectInstances": [

@@ -1,0 +1,96 @@
+{
+  "definitions": [
+    {
+      "id": "definition:delicious-stew",
+      "name": "Delicious Stew",
+      "components": {
+        "food": {
+          "satisfiesTags": [
+            "hunger"
+          ],
+          "spillChance": 0.25,
+          "spillEffectDefinitionId": "effect:stew-stained"
+        }
+      }
+    },
+    {
+      "id": "definition:soap",
+      "name": "Soap",
+      "components": {
+        "cleaning": {
+          "removesTags": [
+            "stain",
+            "washable"
+          ]
+        }
+      }
+    }
+  ],
+  "entities": [
+    {
+      "id": "item:stew-1",
+      "definitionId": "definition:delicious-stew",
+      "components": {
+        "ownership": {
+          "ownerId": "character:alice"
+        }
+      }
+    },
+    {
+      "id": "item:soap-1",
+      "definitionId": "definition:soap",
+      "components": {
+        "ownership": {
+          "ownerId": "character:alice"
+        }
+      }
+    }
+  ],
+  "effectDefinitions": [
+    {
+      "id": "effect:hungry",
+      "tags": [
+        "condition",
+        "hunger"
+      ],
+      "predicates": [],
+      "contributions": [
+        {
+          "id": "description-fragment",
+          "version": 1,
+          "parameters": {
+            "text": "hungry"
+          }
+        }
+      ]
+    },
+    {
+      "id": "effect:stew-stained",
+      "tags": [
+        "condition",
+        "stain",
+        "washable"
+      ],
+      "predicates": [],
+      "contributions": [
+        {
+          "id": "description-fragment",
+          "version": 1,
+          "parameters": {
+            "text": "covered in stew stains"
+          }
+        }
+      ]
+    }
+  ],
+  "effectInstances": [
+    {
+      "id": "effect:alice-hungry",
+      "definitionId": "effect:hungry",
+      "sourceId": "character:alice",
+      "targetId": "character:alice",
+      "createdAt": 0,
+      "state": {}
+    }
+  ]
+}
