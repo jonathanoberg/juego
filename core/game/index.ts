@@ -16,6 +16,7 @@ export interface EffectDefinition {
 export interface EffectInstance {
   id: string; definitionId: string; sourceId: EntityId; targetId: EntityId;
   createdAt: WorldTime; state: Record<string, JsonValue>;
+  provenance?: { kind: 'quest'; id: string; stageId: string; lifetime: 'stage' | 'quest' };
 }
 export type ReadonlyJsonValue = null | boolean | number | string | readonly ReadonlyJsonValue[] | { readonly [key: string]: ReadonlyJsonValue };
 export interface EntityView { readonly id: EntityId; readonly definitionId: string; readonly components: Readonly<Record<string, ReadonlyJsonValue>>; }
@@ -73,3 +74,5 @@ export type { AttackInput, WeaponComponent, AttackModifier, AttackOutcome, Attac
 export type { PersonalityDefinition, PersonalityState, Relationship, Memory, Conversation, DialogueContext, DialogueAdapter, WorldEvent } from './personality.ts';
 
 export type { ActorComponent, CreatureComponent, GroupComponent, GroupMembership, SpawnRecipe, RoleDefinitionComponent, ActorRoleComponent, CapabilityComponent } from './groups.ts';
+
+export type { QuestDefinition, QuestStage, QuestInstance, ObjectiveDefinition, ObjectiveBinding, ObjectiveInstance, ObjectiveCompletionRecord, QuestReward, RewardReceipt } from './quests.ts';

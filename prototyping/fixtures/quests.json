@@ -1,0 +1,489 @@
+{
+  "quests": [
+    {
+      "id": "quest:restore-spring",
+      "version": 1,
+      "narrative": "Restore the spring in a fire-scarred valley.",
+      "acceptancePredicates": [
+        {
+          "id": "class-tag",
+          "version": 1,
+          "parameters": {
+            "tag": "mage"
+          }
+        },
+        {
+          "id": "class-level",
+          "version": 1,
+          "parameters": {
+            "classDefinitionId": "class:sword-wizard",
+            "minimum": 10
+          }
+        },
+        {
+          "id": "has-item",
+          "version": 1,
+          "parameters": {
+            "itemDefinitionId": "definition:ring-of-might",
+            "scope": "equipped"
+          }
+        }
+      ],
+      "initialStages": [
+        "journey"
+      ],
+      "stages": [
+        {
+          "id": "journey",
+          "narrative": "The mage asks you to investigate the valley and grants protection.",
+          "objectives": [
+            {
+              "id": "visit",
+              "objectiveDefinitionId": "objective:visit-valley",
+              "objectiveVersion": 1,
+              "priorCompletion": "fresh",
+              "completionMode": "latch"
+            }
+          ],
+          "requirement": {
+            "all": [
+              {
+                "objective": "visit"
+              }
+            ]
+          },
+          "next": [
+            "remedy"
+          ],
+          "effectsOnEntry": [
+            {
+              "definitionId": "effect:quest-fire-protection",
+              "lifetime": "quest"
+            }
+          ]
+        },
+        {
+          "id": "remedy",
+          "narrative": "Speak to the survivor and gather ten sunflowers to restore the spring.",
+          "objectives": [
+            {
+              "id": "flowers",
+              "objectiveDefinitionId": "objective:carry-sunflowers",
+              "objectiveVersion": 1,
+              "priorCompletion": "fresh",
+              "completionMode": "recheck"
+            },
+            {
+              "id": "survivor",
+              "objectiveDefinitionId": "objective:talk-survivor",
+              "objectiveVersion": 1,
+              "priorCompletion": "fresh",
+              "completionMode": "latch"
+            }
+          ],
+          "requirement": {
+            "all": [
+              {
+                "objective": "flowers"
+              },
+              {
+                "objective": "survivor"
+              }
+            ]
+          },
+          "next": [
+            "return"
+          ]
+        },
+        {
+          "id": "return",
+          "narrative": "Return the sunflowers to the mage, who rewards your service.",
+          "objectives": [
+            {
+              "id": "delivery",
+              "objectiveDefinitionId": "objective:deliver-sunflowers",
+              "objectiveVersion": 1,
+              "priorCompletion": "fresh",
+              "completionMode": "latch"
+            }
+          ],
+          "requirement": {
+            "all": [
+              {
+                "objective": "delivery"
+              }
+            ]
+          },
+          "next": []
+        }
+      ],
+      "rewards": [
+        {
+          "id": "strength",
+          "kind": "base-attribute",
+          "attribute": "strength",
+          "amount": 1
+        },
+        {
+          "id": "flame",
+          "kind": "spell",
+          "classDefinitionId": "class:sword-wizard",
+          "spellDefinitionId": "spell:flame",
+          "bypassEligibility": true
+        },
+        {
+          "id": "sword",
+          "kind": "item",
+          "definitionId": "definition:quest-fire-sword",
+          "placementPolicy": "carried"
+        }
+      ]
+    },
+    {
+      "id": "quest:remember-valley",
+      "version": 1,
+      "narrative": "Recall or revisit the valley.",
+      "acceptancePredicates": [],
+      "initialStages": [
+        "visit"
+      ],
+      "stages": [
+        {
+          "id": "visit",
+          "narrative": "Tell us about the valley.",
+          "objectives": [
+            {
+              "id": "visit",
+              "objectiveDefinitionId": "objective:visit-valley",
+              "objectiveVersion": 1,
+              "priorCompletion": "allow",
+              "completionMode": "latch"
+            }
+          ],
+          "requirement": {
+            "all": [
+              {
+                "objective": "visit"
+              }
+            ]
+          },
+          "next": []
+        }
+      ],
+      "rewards": []
+    },
+    {
+      "id": "quest:revisit-valley",
+      "version": 1,
+      "narrative": "Recall or revisit the valley.",
+      "acceptancePredicates": [],
+      "initialStages": [
+        "visit"
+      ],
+      "stages": [
+        {
+          "id": "visit",
+          "narrative": "Tell us about the valley.",
+          "objectives": [
+            {
+              "id": "visit",
+              "objectiveDefinitionId": "objective:visit-valley",
+              "objectiveVersion": 1,
+              "priorCompletion": "fresh",
+              "completionMode": "latch"
+            }
+          ],
+          "requirement": {
+            "all": [
+              {
+                "objective": "visit"
+              }
+            ]
+          },
+          "next": []
+        }
+      ],
+      "rewards": []
+    }
+  ],
+  "objectiveDefinitions": [
+    {
+      "id": "objective:visit-valley",
+      "version": 1,
+      "description": "Visit the scorched valley.",
+      "behavior": {
+        "id": "visit-location",
+        "version": 1,
+        "parameters": {
+          "locationId": "location:valley"
+        }
+      }
+    },
+    {
+      "id": "objective:carry-sunflowers",
+      "version": 1,
+      "description": "Carry ten sunflowers.",
+      "behavior": {
+        "id": "count-carried-items",
+        "version": 1,
+        "parameters": {
+          "itemDefinitionId": "definition:sunflower",
+          "minimum": 10
+        }
+      }
+    },
+    {
+      "id": "objective:talk-survivor",
+      "version": 1,
+      "description": "Speak to the survivor.",
+      "behavior": {
+        "id": "count-events",
+        "version": 1,
+        "parameters": {
+          "type": "survivor-spoken",
+          "minimum": 1
+        }
+      }
+    },
+    {
+      "id": "objective:deliver-sunflowers",
+      "version": 1,
+      "description": "Deliver ten sunflowers to the mage.",
+      "behavior": {
+        "id": "deliver-items",
+        "version": 1,
+        "parameters": {
+          "itemDefinitionId": "definition:sunflower",
+          "recipientId": "actor:mage-giver",
+          "minimum": 10
+        }
+      }
+    },
+    {
+      "id": "objective:defeat-orcs",
+      "version": 1,
+      "description": "Defeat ten adult orcs.",
+      "behavior": {
+        "id": "count-events",
+        "version": 1,
+        "parameters": {
+          "type": "defeat-credited",
+          "actorDefinitionId": "definition:adult-orc",
+          "minimum": 10
+        }
+      }
+    }
+  ],
+  "definitions": [
+    {
+      "id": "definition:sunflower",
+      "name": "Sunflower",
+      "components": {
+        "physical": {
+          "sizeClass": "extra-small",
+          "weightClass": "featherweight",
+          "tags": [
+            "portable",
+            "item"
+          ]
+        }
+      }
+    },
+    {
+      "id": "definition:mage-giver",
+      "name": "Mage",
+      "components": {
+        "actor": {
+          "controller": "npc"
+        }
+      }
+    },
+    {
+      "id": "definition:quest-fire-sword",
+      "name": "Fire Sword",
+      "components": {
+        "equippable": {
+          "slots": [
+            "hand"
+          ]
+        },
+        "weapon": {
+          "attackBehavior": {
+            "id": "sword-attack",
+            "version": 1,
+            "parameters": {}
+          },
+          "skillId": "sword",
+          "damage": {
+            "minimum": 1,
+            "maximum": 8,
+            "type": "slicing"
+          }
+        },
+        "traits": {
+          "tags": [
+            "fire-enchanted"
+          ]
+        },
+        "effectProvider": {
+          "effects": [
+            "effect:reward-fire-sword"
+          ]
+        }
+      }
+    }
+  ],
+  "entities": [
+    {
+      "id": "actor:mage-giver",
+      "definitionId": "definition:mage-giver",
+      "components": {}
+    },
+    {
+      "id": "item:sunflower-1",
+      "definitionId": "definition:sunflower",
+      "components": {
+        "placement": {
+          "kind": "world",
+          "placeId": "location:valley"
+        }
+      }
+    },
+    {
+      "id": "item:sunflower-2",
+      "definitionId": "definition:sunflower",
+      "components": {
+        "placement": {
+          "kind": "world",
+          "placeId": "location:valley"
+        }
+      }
+    },
+    {
+      "id": "item:sunflower-3",
+      "definitionId": "definition:sunflower",
+      "components": {
+        "placement": {
+          "kind": "world",
+          "placeId": "location:valley"
+        }
+      }
+    },
+    {
+      "id": "item:sunflower-4",
+      "definitionId": "definition:sunflower",
+      "components": {
+        "placement": {
+          "kind": "world",
+          "placeId": "location:valley"
+        }
+      }
+    },
+    {
+      "id": "item:sunflower-5",
+      "definitionId": "definition:sunflower",
+      "components": {
+        "placement": {
+          "kind": "world",
+          "placeId": "location:valley"
+        }
+      }
+    },
+    {
+      "id": "item:sunflower-6",
+      "definitionId": "definition:sunflower",
+      "components": {
+        "placement": {
+          "kind": "world",
+          "placeId": "location:valley"
+        }
+      }
+    },
+    {
+      "id": "item:sunflower-7",
+      "definitionId": "definition:sunflower",
+      "components": {
+        "placement": {
+          "kind": "world",
+          "placeId": "location:valley"
+        }
+      }
+    },
+    {
+      "id": "item:sunflower-8",
+      "definitionId": "definition:sunflower",
+      "components": {
+        "placement": {
+          "kind": "world",
+          "placeId": "location:valley"
+        }
+      }
+    },
+    {
+      "id": "item:sunflower-9",
+      "definitionId": "definition:sunflower",
+      "components": {
+        "placement": {
+          "kind": "world",
+          "placeId": "location:valley"
+        }
+      }
+    },
+    {
+      "id": "item:sunflower-10",
+      "definitionId": "definition:sunflower",
+      "components": {
+        "placement": {
+          "kind": "world",
+          "placeId": "location:valley"
+        }
+      }
+    }
+  ],
+  "effectDefinitions": [
+    {
+      "id": "effect:quest-fire-protection",
+      "tags": [
+        "protection",
+        "fire"
+      ],
+      "predicates": [],
+      "contributions": [
+        {
+          "id": "description-fragment",
+          "version": 1,
+          "parameters": {
+            "text": "protected from fire by the mage"
+          }
+        }
+      ]
+    },
+    {
+      "id": "effect:reward-fire-sword",
+      "tags": [
+        "enchantment",
+        "flame"
+      ],
+      "predicates": [],
+      "contributions": [
+        {
+          "id": "description-fragment",
+          "version": 1,
+          "parameters": {
+            "text": "wreathed in flame"
+          }
+        }
+      ],
+      "attackContributions": [
+        {
+          "id": "susceptible-damage-multiplier",
+          "version": 1,
+          "parameters": {
+            "tag": "susceptible-to-fire",
+            "factor": 2
+          }
+        }
+      ]
+    }
+  ]
+}

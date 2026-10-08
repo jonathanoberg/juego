@@ -13,7 +13,8 @@
     "prototype:inventory": "node prototyping/inventory-demo.ts",
     "prototype:combat": "node prototyping/combat-demo.ts",
     "prototype:personality": "node prototyping/personality-demo.ts",
-    "prototype:groups": "node prototyping/groups-demo.ts"
+    "prototype:groups": "node prototyping/groups-demo.ts",
+    "prototype:quests": "node prototyping/quest-demo.ts"
   },
   "devDependencies": {
     "typescript": "^5.9.3",

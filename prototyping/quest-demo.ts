@@ -1,0 +1,13 @@
+import { PrototypeQuests } from './quests.ts';
+import { questFixture } from './quest-scenario.ts';
+const fixture = questFixture(), w = new PrototypeQuests(fixture);
+const alice = 'character:alice', giver = 'actor:mage-giver', id = 'quest-instance:restore-spring';
+const show = () => console.log('Active stages:', w.snapshot().quests.find(q => q.id === id)?.activeStages.map(s => fixture.quests[0].stages.find(stage => stage.id === s)?.narrative));
+w.accept('quest:restore-spring', id, alice, giver); show();
+w.visit(alice, 'location:valley'); w.advance(id, 'journey'); show();
+for (let n = 1; n <= 10; n++) w.collect(alice, `item:sunflower-${n}`);
+w.recordEvent({ id: 'event:talk-survivor', type: 'survivor-spoken', actorId: alice, at: w.now, facts: {} });
+w.advance(id, 'remedy'); show(); w.deliver(alice, giver, 'definition:sunflower', 10);
+console.log('Quest:', w.advance(id, 'return').status);
+console.log('Reward receipts:', w.snapshot().receipts);
+console.log('Alice attributes:', w.snapshot().entities.find(e => e.id === alice)?.components.attributes);
