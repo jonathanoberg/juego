@@ -1,0 +1,11 @@
+import { PrototypeWorld } from './engine.ts';
+import { combatFixture } from './combat-scenario.ts';
+const rolls = [0, .999, 0, .999];
+const w = new PrototypeWorld(combatFixture(), { next: () => rolls.shift()! });
+const alice = 'character:alice', sword = 'item:sword', target = 'creature:target';
+w.equip(alice, sword); w.equip(target, 'item:shield'); w.equip(target, 'item:target-plate');
+console.log('Ordinary attack:', w.attack({ actorId: alice, weaponId: sword, targetId: target }));
+w.advanceClassLevel(alice, 'class:sword-wizard'); w.advanceClassLevel(alice, 'class:sword-wizard');
+w.learnSpell(alice, 'class:sword-wizard', 'spell:flame'); w.activateSwordFlame(alice, sword);
+console.log(w.describe(sword));
+console.log('Flaming attack:', w.attack({ actorId: alice, weaponId: sword, targetId: target }));

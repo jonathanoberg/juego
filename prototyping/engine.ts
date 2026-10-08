@@ -1,6 +1,8 @@
 import fixture from './fixtures/world.json' with { type: 'json' };
 import type { Entity, Definition, EffectDefinition, EffectInstance, BehaviorContext, WorldReader, JsonValue, ClassDefinitionComponent, ClassProgress, ProgressionComponent, SpellAvailability, ArmorComponent, EquippableComponent, WorldChange, RandomSource } from '../core/game/index.ts';
 import { equipped, threshold, multiply, duration, allowedArmor, descriptionFragment } from './behaviors.ts';
+import { swordAttack, susceptibleMultiplier } from './combat-behaviors.ts';
+import type { AttackInput, AttackModifier, WeaponComponent } from '../core/game/combat.ts';
 import { PrototypeInventory } from './inventory.ts';
 import type { Placement } from '../core/game/inventory.ts';
 import { eatFood, cleanItem } from './status-actions.ts';
@@ -124,7 +126,12 @@ export class PrototypeWorld implements WorldReader {
     let effects = structuredClone(this.effects);
     let nextId = this.nextEffectId;
     for (const change of changes) {
-      if (change.kind === 'removeEffect') {
+      if (change.kind === 'applyDamage') {
+        const target = entities.find(e => e.id === change.targetId);
+        const health = target?.components.health as { current?: number } | undefined;
+        if (!health || typeof health.current !== 'number' || !Number.isFinite(change.amount) || change.amount < 0) throw new Error('Invalid damage operation');
+        target!.components.health = { ...health, current: Math.max(0, health.current - change.amount) };
+      } else if (change.kind === 'removeEffect') {
         if (!effects.some(e => e.id === change.effectInstanceId)) throw new Error('Missing effect to remove');
         effects = effects.filter(e => e.id !== change.effectInstanceId);
       } else if (change.kind === 'consumeItem') {
@@ -139,6 +146,36 @@ export class PrototypeWorld implements WorldReader {
       }
     }
     this.entities = entities; this.effects = effects; this.nextEffectId = nextId;
+  }
+  attack(input: AttackInput) {
+    const weapon = this.component(input.weaponId, 'weapon') as unknown as WeaponComponent | undefined;
+    if (!weapon || weapon.attackBehavior.id !== swordAttack.id || weapon.attackBehavior.version !== swordAttack.version) throw new Error('Unknown weapon attack behavior');
+    const ctx = { sourceId: input.weaponId, targetId: input.targetId, now: this.now, world: this, random: this.random };
+    const modifiers: AttackModifier[] = [];
+    for (const effect of this.effectsOn(input.weaponId)) {
+      const definition = this.effectDefinitions.find(d => d.id === effect.definitionId)!;
+      for (const ref of definition.attackContributions ?? []) {
+        if (ref.id !== susceptibleMultiplier.id || ref.version !== susceptibleMultiplier.version) throw new Error('Unknown attack contribution');
+        const { tag, factor } = ref.parameters;
+        if (typeof tag !== 'string' || typeof factor !== 'number') throw new Error('Invalid attack contribution parameters');
+        modifiers.push(...susceptibleMultiplier.evaluate(ctx, { tag, factor }, input).modifiers);
+      }
+    }
+    const result = swordAttack.execute(ctx, {}, input, modifiers);
+    if (!result.accepted) throw new Error(result.reason);
+    this.commit(result.changes);
+    return result.outcome;
+  }
+  activateSwordFlame(actorId: string, weaponId: string) {
+    const ownership = this.component(weaponId, 'ownership') as { ownerId?: string } | undefined;
+    const equipment = this.component(actorId, 'equipment') as Record<string, string> | undefined;
+    if (ownership?.ownerId !== actorId || equipment?.hand !== weaponId) throw new Error('Flame requires an owned sword in hand');
+    const weapon = this.component(weaponId, 'weapon') as unknown as WeaponComponent | undefined;
+    if (!weapon || weapon.attackBehavior.id !== swordAttack.id) throw new Error('Flame requires a sword');
+    const progress = this.progression(actorId);
+    if (!progress.classes.some(c => c.spellSelections.some(s => s.spellDefinitionId === 'spell:flame'))) throw new Error('Flame spell has not been learned');
+    if (this.effectsOn(weaponId).some(e => e.definitionId === 'effect:sword-flame')) throw new Error('Flame is already active');
+    this.commit([{ kind: 'attachEffect', definitionId: 'effect:sword-flame', sourceId: actorId, targetId: weaponId }]);
   }
   eat(actorId: string, foodId: string) {
     this.requireEntity(actorId);

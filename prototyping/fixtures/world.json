@@ -120,7 +120,9 @@
           ]
         },
         "armor": {
-          "category": "robes"
+          "category": "robes",
+          "reduceHit": 0,
+          "reduceDamage": 1
         }
       }
     },
@@ -134,7 +136,9 @@
           ]
         },
         "armor": {
-          "category": "plate"
+          "category": "plate",
+          "reduceHit": 0,
+          "reduceDamage": 6
         }
       }
     }

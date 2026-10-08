@@ -1,0 +1,108 @@
+{
+  "definitions": [
+    {
+      "id": "definition:training-target",
+      "name": "Training Creature",
+      "components": {}
+    },
+    {
+      "id": "definition:shield",
+      "name": "Shield",
+      "components": {
+        "armor": {
+          "category": "shield",
+          "reduceHit": 0.3,
+          "reduceDamage": 0
+        },
+        "equippable": {
+          "slots": [
+            "off-hand"
+          ]
+        }
+      }
+    }
+  ],
+  "entities": [
+    {
+      "id": "creature:target",
+      "definitionId": "definition:training-target",
+      "components": {
+        "health": {
+          "current": 100
+        },
+        "skills": {
+          "dodge": 5
+        },
+        "traits": {
+          "tags": [
+            "susceptible-to-fire"
+          ]
+        },
+        "equipment": {}
+      }
+    },
+    {
+      "id": "item:shield",
+      "definitionId": "definition:shield",
+      "components": {
+        "ownership": {
+          "ownerId": "creature:target"
+        }
+      }
+    },
+    {
+      "id": "item:target-plate",
+      "definitionId": "definition:plate",
+      "components": {
+        "ownership": {
+          "ownerId": "creature:target"
+        }
+      }
+    },
+    {
+      "id": "item:target-robes",
+      "definitionId": "definition:robes",
+      "components": {
+        "ownership": {
+          "ownerId": "creature:target"
+        }
+      }
+    }
+  ],
+  "effectDefinitions": [
+    {
+      "id": "effect:sword-flame",
+      "tags": [
+        "enchantment",
+        "flame"
+      ],
+      "predicates": [],
+      "contributions": [
+        {
+          "id": "description-fragment",
+          "version": 1,
+          "parameters": {
+            "text": "wreathed in flame"
+          }
+        }
+      ],
+      "attackContributions": [
+        {
+          "id": "susceptible-damage-multiplier",
+          "version": 1,
+          "parameters": {
+            "tag": "susceptible-to-fire",
+            "factor": 2
+          }
+        }
+      ],
+      "lifetime": {
+        "id": "duration",
+        "version": 1,
+        "parameters": {
+          "seconds": 60
+        }
+      }
+    }
+  ]
+}

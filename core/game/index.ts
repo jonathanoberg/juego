@@ -10,6 +10,7 @@ export interface EffectDefinition {
   tags?: string[];
   predicates: BehaviorReference[]; // All must be satisfied.
   contributions: BehaviorReference[];
+  attackContributions?: BehaviorReference[];
   lifetime?: BehaviorReference;
 }
 export interface EffectInstance {
@@ -52,7 +53,8 @@ export interface ContributionBehavior<P> extends BehaviorMetadata {
 export type WorldChange =
   | { kind: 'attachEffect'; definitionId: string; sourceId: EntityId; targetId: EntityId }
   | { kind: 'consumeItem'; entityId: EntityId; quantity: number }
-  | { kind: 'removeEffect'; effectInstanceId: string };
+  | { kind: 'removeEffect'; effectInstanceId: string }
+  | { kind: 'applyDamage'; targetId: EntityId; amount: number; damageType: string };
 export type ActionResult = { accepted: false; reason: string } | { accepted: true; changes: WorldChange[] };
 export interface ActionBehavior<P, I> extends BehaviorMetadata {
   role: 'action'; execute(context: BehaviorContext, parameters: Readonly<P>, input: Readonly<I>): ActionResult;
@@ -65,3 +67,5 @@ export interface LifetimeBehavior<P> extends BehaviorMetadata {
 export type { ClassDefinitionComponent, ClassProgress, ProgressionComponent, SpellDefinitionComponent, SpellSelection, ArmorComponent, EquippableComponent, SpellAvailability } from './progression.ts';
 
 export type { PhysicalComponent, ContainerComponent, Placement, AdmissionBehavior, AdmissionContext } from './inventory.ts';
+
+export type { AttackInput, WeaponComponent, AttackModifier, AttackOutcome, AttackResult, AttackBehavior, AttackContributionBehavior } from './combat.ts';

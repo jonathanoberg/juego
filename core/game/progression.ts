@@ -25,7 +25,7 @@ export interface ClassProgress {
   spellSelections: SpellSelection[];
 }
 export interface ProgressionComponent { classes: ClassProgress[]; }
-export interface ArmorComponent { category: string; }
+export interface ArmorComponent { category: string; reduceHit: number; reduceDamage: number; }
 export interface EquippableComponent { slots: string[]; }
 export interface SpellAvailability {
   spellDefinitionId: string;
