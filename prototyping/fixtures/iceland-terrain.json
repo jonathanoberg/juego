@@ -1,0 +1,1457 @@
+{
+  "description": "Hand-authored interpretation of supplied Iceland photograph under a synthetic top-down convention; not a surveyed map.",
+  "source": {
+    "filename": "aerial-view-over-the-hills-in-iceland-2026-09-22-08-30-02-utc.jpg",
+    "widthPx": 2048,
+    "heightPx": 954,
+    "pixelsPerMeter": 10,
+    "originPx": [
+      1024,
+      477
+    ],
+    "xDirection": "right",
+    "yDirection": "up",
+    "worldBoundsM": [
+      -102.4,
+      -47.7,
+      102.4,
+      47.7
+    ]
+  },
+  "world": {
+    "id": "b57e5bcd-d6bd-56f7-b107-4fb1686816e9",
+    "name": "Iceland image test",
+    "baseHexEdgeM": 1,
+    "gridDefinition": {
+      "scheme": "alternating-aperture-7-v1",
+      "origin": [
+        0,
+        0
+      ],
+      "axialBasisDegrees": 60
+    }
+  },
+  "terrainGenerators": [
+    {
+      "id": "bc8879ef-bfaf-5b1e-a91f-178f559d9ca0",
+      "name": "iceland-test-background",
+      "version": 1,
+      "implementationKey": "proposed:rocky-low-vegetation-v1",
+      "parameters": {
+        "prototype": "rocky-low-vegetation",
+        "status": "specification-only; generator not implemented"
+      }
+    }
+  ],
+  "terrainRegions": [
+    {
+      "id": "b54626a7-1264-4c98-a529-000000000001",
+      "worldId": "b57e5bcd-d6bd-56f7-b107-4fb1686816e9",
+      "parentId": null,
+      "cellAddress": "5:0:0",
+      "level": 5,
+      "childSlot": null,
+      "terrainLabel": "rocky ground with low vegetation",
+      "surfaceDefaults": {
+        "substrate": "rock-and-soil",
+        "vegetationCover": "patchy-low-vegetation"
+      },
+      "reliefDefaults": {
+        "unevenness": "rugged"
+      },
+      "constraints": {},
+      "generatorId": "bc8879ef-bfaf-5b1e-a91f-178f559d9ca0",
+      "generationSeed": 48219,
+      "generationParams": {},
+      "revision": 1,
+      "footprintSource": "exact aggregate derived from cellAddress by iceland-map-demo"
+    },
+    {
+      "id": "b54626a7-1264-4c98-a529-000000000002",
+      "worldId": "b57e5bcd-d6bd-56f7-b107-4fb1686816e9",
+      "parentId": null,
+      "cellAddress": "5:-1:1",
+      "level": 5,
+      "childSlot": null,
+      "terrainLabel": "rocky ground with low vegetation",
+      "surfaceDefaults": {
+        "substrate": "rock-and-soil",
+        "vegetationCover": "patchy-low-vegetation"
+      },
+      "reliefDefaults": {
+        "unevenness": "rugged"
+      },
+      "constraints": {},
+      "generatorId": "bc8879ef-bfaf-5b1e-a91f-178f559d9ca0",
+      "generationSeed": 48219,
+      "generationParams": {},
+      "revision": 1,
+      "footprintSource": "exact aggregate derived from cellAddress by iceland-map-demo"
+    },
+    {
+      "id": "b54626a7-1264-4c98-a529-000000000003",
+      "worldId": "b57e5bcd-d6bd-56f7-b107-4fb1686816e9",
+      "parentId": null,
+      "cellAddress": "5:1:-1",
+      "level": 5,
+      "childSlot": null,
+      "terrainLabel": "rocky ground with low vegetation",
+      "surfaceDefaults": {
+        "substrate": "rock-and-soil",
+        "vegetationCover": "patchy-low-vegetation"
+      },
+      "reliefDefaults": {
+        "unevenness": "rugged"
+      },
+      "constraints": {},
+      "generatorId": "bc8879ef-bfaf-5b1e-a91f-178f559d9ca0",
+      "generationSeed": 48219,
+      "generationParams": {},
+      "revision": 1,
+      "footprintSource": "exact aggregate derived from cellAddress by iceland-map-demo"
+    }
+  ],
+  "terrainFeatures": [
+    {
+      "id": "269eda73-4d18-5182-b82b-7a8ab203afc3",
+      "worldId": "b57e5bcd-d6bd-56f7-b107-4fb1686816e9",
+      "name": "Western winding channel",
+      "kind": "watercourse",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -77.9,
+            47.7
+          ],
+          [
+            -71.7,
+            44.7
+          ],
+          [
+            -77.2,
+            42
+          ],
+          [
+            -87.1,
+            40.8
+          ],
+          [
+            -97.2,
+            40.1
+          ],
+          [
+            -99.4,
+            37
+          ],
+          [
+            -100.9,
+            33.2
+          ],
+          [
+            -94.7,
+            31.7
+          ],
+          [
+            -92.3,
+            27.4
+          ],
+          [
+            -87.3,
+            26.3
+          ],
+          [
+            -81.7,
+            26.1
+          ],
+          [
+            -79.5,
+            21.9
+          ],
+          [
+            -78.9,
+            18.5
+          ],
+          [
+            -68,
+            16.4
+          ],
+          [
+            -59.9,
+            13.6
+          ],
+          [
+            -55.6,
+            10.1
+          ],
+          [
+            -53.4,
+            6.2
+          ],
+          [
+            -46.5,
+            2.4
+          ],
+          [
+            -44,
+            -1.2
+          ],
+          [
+            -42,
+            -6
+          ],
+          [
+            -46.4,
+            -9.7
+          ],
+          [
+            -51,
+            -13.3
+          ]
+        ]
+      },
+      "influenceFootprint": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -102.9,
+                -15.3
+              ],
+              [
+                -40,
+                -15.3
+              ],
+              [
+                -40,
+                49.7
+              ],
+              [
+                -102.9,
+                49.7
+              ],
+              [
+                -102.9,
+                -15.3
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "channelWidthM": [
+          0.5,
+          1.5
+        ],
+        "widthStatus": "visual estimate",
+        "flowDirection": "unspecified",
+        "bedSubstrate": "unspecified",
+        "interpretationConfidence": "medium"
+      },
+      "state": {
+        "waterPresent": "probable"
+      },
+      "revision": 1
+    },
+    {
+      "id": "438a81fb-46ff-555d-ac73-53ce4ec1f588",
+      "worldId": "b57e5bcd-d6bd-56f7-b107-4fb1686816e9",
+      "name": "Southern channel continuation",
+      "kind": "watercourse",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -51,
+            -13.3
+          ],
+          [
+            -51.9,
+            -17.4
+          ],
+          [
+            -53.8,
+            -21.6
+          ],
+          [
+            -52.6,
+            -23.9
+          ],
+          [
+            -55.1,
+            -25.1
+          ],
+          [
+            -54.3,
+            -27.1
+          ],
+          [
+            -56.5,
+            -29
+          ],
+          [
+            -58.5,
+            -32.6
+          ],
+          [
+            -60.4,
+            -35.5
+          ],
+          [
+            -61.9,
+            -38.2
+          ]
+        ]
+      },
+      "influenceFootprint": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -63.4,
+                -39.7
+              ],
+              [
+                -49.5,
+                -39.7
+              ],
+              [
+                -49.5,
+                -11.8
+              ],
+              [
+                -63.4,
+                -11.8
+              ],
+              [
+                -63.4,
+                -39.7
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "channelWidthM": [
+          0.3,
+          1
+        ],
+        "flowDirection": "unspecified",
+        "continuity": "appears connected to western channel",
+        "interpretationConfidence": "medium"
+      },
+      "state": {
+        "waterPresent": "probable"
+      },
+      "revision": 1
+    },
+    {
+      "id": "7725b577-4a87-5160-8e45-1f52afcef80b",
+      "worldId": "b57e5bcd-d6bd-56f7-b107-4fb1686816e9",
+      "name": "Western branch or drainage",
+      "kind": "channel",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -51,
+            -13.3
+          ],
+          [
+            -54.2,
+            -13.5
+          ],
+          [
+            -57.3,
+            -11
+          ],
+          [
+            -60.6,
+            -11
+          ],
+          [
+            -64,
+            -13.3
+          ],
+          [
+            -67.3,
+            -16.4
+          ],
+          [
+            -67.5,
+            -20.4
+          ],
+          [
+            -71.8,
+            -24.3
+          ],
+          [
+            -76.4,
+            -27.4
+          ]
+        ]
+      },
+      "influenceFootprint": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -77.9,
+                -28.9
+              ],
+              [
+                -49.5,
+                -28.9
+              ],
+              [
+                -49.5,
+                -9.5
+              ],
+              [
+                -77.9,
+                -9.5
+              ],
+              [
+                -77.9,
+                -28.9
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "flowDirection": "unspecified",
+        "classification": "possible tributary or drainage channel",
+        "interpretationConfidence": "low"
+      },
+      "state": {
+        "waterPresent": "uncertain"
+      },
+      "revision": 1
+    },
+    {
+      "id": "ef2e5187-97d6-590e-a162-076f4efdf175",
+      "worldId": "b57e5bcd-d6bd-56f7-b107-4fb1686816e9",
+      "name": "Small southern pool",
+      "kind": "pool",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -58.5,
+              -28.5
+            ],
+            [
+              -57,
+              -28.5
+            ],
+            [
+              -55.8,
+              -30
+            ],
+            [
+              -56.3,
+              -31.6
+            ],
+            [
+              -58,
+              -32
+            ],
+            [
+              -59.3,
+              -30.8
+            ],
+            [
+              -59.2,
+              -29.6
+            ],
+            [
+              -58.5,
+              -28.5
+            ]
+          ]
+        ]
+      },
+      "influenceFootprint": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -58.5,
+                -28.5
+              ],
+              [
+                -57,
+                -28.5
+              ],
+              [
+                -55.8,
+                -30
+              ],
+              [
+                -56.3,
+                -31.6
+              ],
+              [
+                -58,
+                -32
+              ],
+              [
+                -59.3,
+                -30.8
+              ],
+              [
+                -59.2,
+                -29.6
+              ],
+              [
+                -58.5,
+                -28.5
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "basinDepth": "unspecified",
+        "interpretationConfidence": "medium"
+      },
+      "state": {
+        "waterPresent": "probable"
+      },
+      "revision": 1
+    },
+    {
+      "id": "2d9459e5-5c00-5ac9-a1e0-b5b49f6f9548",
+      "worldId": "b57e5bcd-d6bd-56f7-b107-4fb1686816e9",
+      "name": "Western green ground",
+      "kind": "vegetation-patch",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -102.4,
+              30
+            ],
+            [
+              -92.7,
+              25.9
+            ],
+            [
+              -82.8,
+              26.4
+            ],
+            [
+              -78.9,
+              18.2
+            ],
+            [
+              -59.9,
+              13.7
+            ],
+            [
+              -54.6,
+              6.9
+            ],
+            [
+              -46.2,
+              2.5
+            ],
+            [
+              -42,
+              -6.1
+            ],
+            [
+              -46.7,
+              -9.9
+            ],
+            [
+              -51.8,
+              -13.4
+            ],
+            [
+              -57.4,
+              -10.6
+            ],
+            [
+              -62.1,
+              -11.9
+            ],
+            [
+              -67.4,
+              -17.3
+            ],
+            [
+              -67.3,
+              -20.8
+            ],
+            [
+              -72.2,
+              -24.7
+            ],
+            [
+              -76.6,
+              -28.4
+            ],
+            [
+              -70.7,
+              -33
+            ],
+            [
+              -75.7,
+              -38.6
+            ],
+            [
+              -85.7,
+              -43.1
+            ],
+            [
+              -102.4,
+              -44.7
+            ],
+            [
+              -102.4,
+              30
+            ]
+          ]
+        ]
+      },
+      "influenceFootprint": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -102.4,
+                30
+              ],
+              [
+                -92.7,
+                25.9
+              ],
+              [
+                -82.8,
+                26.4
+              ],
+              [
+                -78.9,
+                18.2
+              ],
+              [
+                -59.9,
+                13.7
+              ],
+              [
+                -54.6,
+                6.9
+              ],
+              [
+                -46.2,
+                2.5
+              ],
+              [
+                -42,
+                -6.1
+              ],
+              [
+                -46.7,
+                -9.9
+              ],
+              [
+                -51.8,
+                -13.4
+              ],
+              [
+                -57.4,
+                -10.6
+              ],
+              [
+                -62.1,
+                -11.9
+              ],
+              [
+                -67.4,
+                -17.3
+              ],
+              [
+                -67.3,
+                -20.8
+              ],
+              [
+                -72.2,
+                -24.7
+              ],
+              [
+                -76.6,
+                -28.4
+              ],
+              [
+                -70.7,
+                -33
+              ],
+              [
+                -75.7,
+                -38.6
+              ],
+              [
+                -85.7,
+                -43.1
+              ],
+              [
+                -102.4,
+                -44.7
+              ],
+              [
+                -102.4,
+                30
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "surfacePatch": {
+          "vegetationCover": "dense-low-vegetation"
+        },
+        "vegetationType": "grass-like; species unspecified",
+        "wetness": "unspecified",
+        "interpretationConfidence": "high"
+      },
+      "state": {},
+      "revision": 1
+    },
+    {
+      "id": "63d7fe73-75a6-5c8e-a3dc-457b99f7f977",
+      "worldId": "b57e5bcd-d6bd-56f7-b107-4fb1686816e9",
+      "name": "Northern moss-like cover",
+      "kind": "vegetation-patch",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -70.4,
+              47.7
+            ],
+            [
+              44.6,
+              47.7
+            ],
+            [
+              60,
+              42.6
+            ],
+            [
+              84.6,
+              40.8
+            ],
+            [
+              102.4,
+              43.2
+            ],
+            [
+              102.4,
+              14.9
+            ],
+            [
+              88.4,
+              14
+            ],
+            [
+              68.5,
+              17.2
+            ],
+            [
+              49.1,
+              21.4
+            ],
+            [
+              32.6,
+              17.4
+            ],
+            [
+              20.6,
+              23.3
+            ],
+            [
+              1.6,
+              22.1
+            ],
+            [
+              -15.4,
+              27.8
+            ],
+            [
+              -32.1,
+              28.6
+            ],
+            [
+              -49.4,
+              33.6
+            ],
+            [
+              -63.9,
+              33.7
+            ],
+            [
+              -70.4,
+              47.7
+            ]
+          ]
+        ]
+      },
+      "influenceFootprint": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -70.4,
+                47.7
+              ],
+              [
+                44.6,
+                47.7
+              ],
+              [
+                60,
+                42.6
+              ],
+              [
+                84.6,
+                40.8
+              ],
+              [
+                102.4,
+                43.2
+              ],
+              [
+                102.4,
+                14.9
+              ],
+              [
+                88.4,
+                14
+              ],
+              [
+                68.5,
+                17.2
+              ],
+              [
+                49.1,
+                21.4
+              ],
+              [
+                32.6,
+                17.4
+              ],
+              [
+                20.6,
+                23.3
+              ],
+              [
+                1.6,
+                22.1
+              ],
+              [
+                -15.4,
+                27.8
+              ],
+              [
+                -32.1,
+                28.6
+              ],
+              [
+                -49.4,
+                33.6
+              ],
+              [
+                -63.9,
+                33.7
+              ],
+              [
+                -70.4,
+                47.7
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "surfacePatch": {
+          "vegetationCover": "patchy-low-vegetation"
+        },
+        "vegetationType": "moss-like; species unspecified",
+        "interpretationConfidence": "medium"
+      },
+      "state": {},
+      "revision": 1
+    },
+    {
+      "id": "fcbdefad-5d1c-5fe5-9774-fef61b736182",
+      "worldId": "b57e5bcd-d6bd-56f7-b107-4fb1686816e9",
+      "name": "Western exposed slope",
+      "kind": "slope",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -88,
+              33
+            ],
+            [
+              -70.9,
+              33.7
+            ],
+            [
+              -58.2,
+              31.1
+            ],
+            [
+              -49.1,
+              28.1
+            ],
+            [
+              -31.3,
+              28.1
+            ],
+            [
+              -19.9,
+              25.5
+            ],
+            [
+              -14,
+              15.3
+            ],
+            [
+              -16.9,
+              -3.5
+            ],
+            [
+              -21.3,
+              -9.2
+            ],
+            [
+              -35.8,
+              -15.8
+            ],
+            [
+              -46.4,
+              -10
+            ],
+            [
+              -42,
+              -5.9
+            ],
+            [
+              -44.4,
+              0.8
+            ],
+            [
+              -53.3,
+              5.9
+            ],
+            [
+              -58.2,
+              13.5
+            ],
+            [
+              -78.1,
+              18.5
+            ],
+            [
+              -81.5,
+              25.5
+            ],
+            [
+              -88,
+              33
+            ]
+          ]
+        ]
+      },
+      "influenceFootprint": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -88,
+                33
+              ],
+              [
+                -70.9,
+                33.7
+              ],
+              [
+                -58.2,
+                31.1
+              ],
+              [
+                -49.1,
+                28.1
+              ],
+              [
+                -31.3,
+                28.1
+              ],
+              [
+                -19.9,
+                25.5
+              ],
+              [
+                -14,
+                15.3
+              ],
+              [
+                -16.9,
+                -3.5
+              ],
+              [
+                -21.3,
+                -9.2
+              ],
+              [
+                -35.8,
+                -15.8
+              ],
+              [
+                -46.4,
+                -10
+              ],
+              [
+                -42,
+                -5.9
+              ],
+              [
+                -44.4,
+                0.8
+              ],
+              [
+                -53.3,
+                5.9
+              ],
+              [
+                -58.2,
+                13.5
+              ],
+              [
+                -78.1,
+                18.5
+              ],
+              [
+                -81.5,
+                25.5
+              ],
+              [
+                -88,
+                33
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "surfacePatch": {
+          "substrate": "exposed-earth-and-loose-rock",
+          "vegetationCover": "sparse"
+        },
+        "reliefPatch": {
+          "unevenness": "rugged"
+        },
+        "slopeMagnitude": "unspecified",
+        "highSide": "toward northern crest, inferred",
+        "lowSide": "toward channel, inferred",
+        "interpretationConfidence": "medium"
+      },
+      "state": {},
+      "revision": 1
+    },
+    {
+      "id": "ee8a7941-8da8-55ab-93ed-9312e87ea5ec",
+      "worldId": "b57e5bcd-d6bd-56f7-b107-4fb1686816e9",
+      "name": "Northern western break of slope",
+      "kind": "break-of-slope",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -86.5,
+            28.4
+          ],
+          [
+            -72.8,
+            29.1
+          ],
+          [
+            -58.9,
+            27.6
+          ],
+          [
+            -49.7,
+            23.7
+          ],
+          [
+            -39.7,
+            23.3
+          ],
+          [
+            -31.3,
+            25.2
+          ],
+          [
+            -21.1,
+            23.3
+          ]
+        ]
+      },
+      "influenceFootprint": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -89.5,
+                20.3
+              ],
+              [
+                -18.1,
+                20.3
+              ],
+              [
+                -18.1,
+                32.1
+              ],
+              [
+                -89.5,
+                32.1
+              ],
+              [
+                -89.5,
+                20.3
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "transitionKind": "mixed-slope-and-rock-step",
+        "riseDirection": "toward upper image, inferred",
+        "magnitude": "unspecified",
+        "interpretationConfidence": "medium"
+      },
+      "state": {},
+      "revision": 1
+    },
+    {
+      "id": "bc6dca5b-369b-5790-a48f-24c302b86f83",
+      "worldId": "b57e5bcd-d6bd-56f7-b107-4fb1686816e9",
+      "name": "Central rocky escarpment",
+      "kind": "escarpment",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -20.9,
+            25.1
+          ],
+          [
+            -11.6,
+            21.6
+          ],
+          [
+            0.3,
+            20.2
+          ],
+          [
+            14.1,
+            20.4
+          ],
+          [
+            23.9,
+            15.9
+          ],
+          [
+            28.9,
+            9.2
+          ],
+          [
+            33.4,
+            2.6
+          ],
+          [
+            31.1,
+            -4
+          ]
+        ]
+      },
+      "influenceFootprint": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -32.9,
+                -16
+              ],
+              [
+                45.4,
+                -16
+              ],
+              [
+                45.4,
+                37.1
+              ],
+              [
+                -32.9,
+                37.1
+              ],
+              [
+                -32.9,
+                -16
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "transitionKind": "rock-face",
+        "riseDirection": "unspecified",
+        "magnitude": "unspecified",
+        "segmentation": "irregular rock faces with gullies",
+        "interpretationConfidence": "medium"
+      },
+      "state": {},
+      "revision": 1
+    },
+    {
+      "id": "6b60a7dc-738d-5bca-8425-70cd5cdc19d8",
+      "worldId": "b57e5bcd-d6bd-56f7-b107-4fb1686816e9",
+      "name": "Eastern rocky escarpment",
+      "kind": "escarpment",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            38.7,
+            -9
+          ],
+          [
+            47.1,
+            0.3
+          ],
+          [
+            53.2,
+            6.6
+          ],
+          [
+            63.5,
+            10
+          ],
+          [
+            75,
+            11.1
+          ],
+          [
+            85.3,
+            8.1
+          ],
+          [
+            102.4,
+            11.1
+          ]
+        ]
+      },
+      "influenceFootprint": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                28.700000000000003,
+                -19
+              ],
+              [
+                112.4,
+                -19
+              ],
+              [
+                112.4,
+                21.1
+              ],
+              [
+                28.700000000000003,
+                21.1
+              ],
+              [
+                28.700000000000003,
+                -19
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "transitionKind": "rock-face",
+        "riseDirection": "unspecified",
+        "magnitude": "unspecified",
+        "interpretationConfidence": "medium"
+      },
+      "state": {},
+      "revision": 1
+    },
+    {
+      "id": "7445dc00-8a75-5ad3-a325-c31d8e8f464a",
+      "worldId": "b57e5bcd-d6bd-56f7-b107-4fb1686816e9",
+      "name": "Central foreground ridge",
+      "kind": "ridge",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -14.8,
+            -16.2
+          ],
+          [
+            -4.6,
+            -7.5
+          ],
+          [
+            7.6,
+            -7.2
+          ],
+          [
+            20.6,
+            -8.9
+          ],
+          [
+            31,
+            -16.4
+          ]
+        ]
+      },
+      "influenceFootprint": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -20.8,
+                -22.4
+              ],
+              [
+                37,
+                -22.4
+              ],
+              [
+                37,
+                -1.2000000000000002
+              ],
+              [
+                -20.8,
+                -1.2000000000000002
+              ],
+              [
+                -20.8,
+                -22.4
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "reliefRole": "crest",
+        "approachSides": "rise toward crest on both sides, inferred",
+        "magnitude": "unspecified",
+        "interpretationConfidence": "medium"
+      },
+      "state": {},
+      "revision": 1
+    },
+    {
+      "id": "43b65ad9-43eb-50bb-aff7-ff4226c84e9d",
+      "worldId": "b57e5bcd-d6bd-56f7-b107-4fb1686816e9",
+      "name": "Eastern incision",
+      "kind": "gully",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            77.1,
+            -23.8
+          ],
+          [
+            71.6,
+            -13
+          ],
+          [
+            66.6,
+            -7.4
+          ],
+          [
+            61.4,
+            -1.2
+          ],
+          [
+            60.1,
+            4.9
+          ]
+        ]
+      },
+      "influenceFootprint": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                56.1,
+                -27.8
+              ],
+              [
+                81.1,
+                -27.8
+              ],
+              [
+                81.1,
+                8.9
+              ],
+              [
+                56.1,
+                8.9
+              ],
+              [
+                56.1,
+                -27.8
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "waterPresence": "not established",
+        "reliefRole": "local trough",
+        "magnitude": "unspecified",
+        "interpretationConfidence": "low"
+      },
+      "state": {},
+      "revision": 1
+    }
+  ],
+  "terrainOverrides": [],
+  "terrainBoundaries": [],
+  "notes": [
+    "No numeric slope heights, passability, water depth, species, or flow direction inferred.",
+    "Line influence footprints are conservative retrieval envelopes, not physical widths.",
+    "Vegetation/slope patches specify intended generator inputs; feature resolution is not implemented.",
+    "terrain_boundary rows are derived only when a feature is intersected with chosen cell edges.",
+    "Named overlapping regions need a separate region model; labels here are feature names.",
+    "Fixture is an authoring specification, not directly importable SQL. Demo exports full region footprints as GeoJSON."
+  ]
+}
