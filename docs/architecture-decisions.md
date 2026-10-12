@@ -124,3 +124,15 @@ Architecture decision record. Dates indicate when decisions or deferrals were re
 - Preserve same-world ancestor and feature references with composite foreign keys.
 - Defer cell addressing, JSON contracts, inheritance precedence, and generation
   algorithms. See `terrain-storage.md` for the initial persistence model.
+
+## Terrain refinement — 2026-10-12
+
+- Designers author major features, generate detail, and edit results. Deliberate
+  edits win over defaults, generated variation, authored features, and constraints.
+- Named geographic and political regions may overlap independently of cell ownership.
+- Cave entrances connect to separate geographic worlds.
+- Terrain labels are descriptive; separately maintained prototypes supply defaults.
+- Generators/prototypes may evolve. Seeds reproduce current rules; revisions
+  invalidate caches rather than permanently freezing terrain.
+- Prototype alternating planar aperture-7 transforms with exact aggregate
+  footprints. See `hex-aggregation.md`; production addressing is not yet wired in.
