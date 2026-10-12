@@ -136,3 +136,13 @@ Architecture decision record. Dates indicate when decisions or deferrals were re
   invalidate caches rather than permanently freezing terrain.
 - Prototype alternating planar aperture-7 transforms with exact aggregate
   footprints. See `hex-aggregation.md`; production addressing is not yet wired in.
+
+## Terrain-generation prototype — 2026-10-12
+
+- Use an internal relative-height field with arbitrary zero and derive edge
+  differences from it. Do not persist absolute altitude or generated samples.
+- First output is physical terrain only, without actor movement costs.
+- Prototype coordinate-based noise, authored surface patches, channels, ridge,
+  escarpments, and final local edits against the Iceland example.
+- Synthetic height/profile values are explicit editable assumptions, not photo
+  measurements. See `terrain-generation.md` for limitations and run commands.

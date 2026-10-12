@@ -1,0 +1,14 @@
+import { writeFileSync } from 'node:fs';
+import fixture from './fixtures/iceland-terrain.json' with {type:'json'};
+import { TerrainGenerator, icelandPrototype } from './terrain-generation.ts';
+import type { Feature } from './terrain-generation.ts';
+const g=new TerrainGenerator(icelandPrototype,fixture.terrainFeatures as Feature[]);
+const cells=g.viewport(fixture.source.worldBoundsM as [number,number,number,number]);
+const output=process.argv[2];
+if(output)writeFileSync(output,JSON.stringify({prototype:icelandPrototype,bounds:fixture.source.worldBoundsM,cells})+'\n');
+const heights=cells.map(c=>c.relativeHeightM);
+console.log(`Generated ${cells.length} one-meter-edge cells on demand`);
+console.log(`Relative height: ${Math.min(...heights).toFixed(2)} to ${Math.max(...heights).toFixed(2)} m; arbitrary zero`);
+console.log(`Water-covered cell centers: ${cells.filter(c=>c.surface.waterPresent).length}`);
+console.log(`Rule revision: ${g.revision}; seed ${icelandPrototype.seed}`);
+if(output)console.log(`Wrote ${output}`);

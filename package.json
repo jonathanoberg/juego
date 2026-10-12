@@ -20,7 +20,8 @@
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:status": "prisma migrate status",
-    "prototype:hex": "node prototyping/hex-grid-demo.ts"
+    "prototype:hex": "node prototyping/hex-grid-demo.ts",
+    "prototype:terrain": "node prototyping/terrain-generation-demo.ts"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
