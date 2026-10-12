@@ -12,10 +12,11 @@ export interface Patch {
 }
 export interface Surface { substrate: string; vegetationDensity: number; wetness: string; waterPresent: boolean }
 export interface TerrainSample { x: number; y: number; relativeHeightM: number; surface: Surface; featureIds: string[] }
+export interface GeneratedTree { id: string; kind: 'tree'; x: number; y: number; crownRadiusM: number; heightM: number; standId: string }
 export interface GeneratedCell extends TerrainSample { address: string; q: number; r: number }
 export interface TerrainPrototype {
   revision: string; seed: number; worldId: string;
-  background: { substrate: string; vegetationDensity: number; roughnessM: number };
+  background: { substrate: string; vegetationDensity: number; roughnessM: number; wetness?: string };
   // Synthetic authoring values, not heights measured from the source image.
   ridgeHeightM: number; ridgeHalfWidthM: number;
   cliffHeightM: number; cliffInfluenceM: number;
@@ -71,7 +72,7 @@ function nearest(g:Geometry,p:Point):{distance:number; side:number; along:number
   total+=len;
  }return {distance,side,along,length:total};
 }
-const priorities:Record<string,number>={'vegetation-patch':30,slope:40,watercourse:60,channel:60,pool:70};
+const priorities:Record<string,number>={'vegetation-patch':30,'tree-stand':35,'wet-ground':45,pond:70,slope:40,watercourse:60,channel:60,pool:70};
 export class TerrainGenerator {
  readonly revision:string;
  private readonly seed:number;
@@ -90,12 +91,30 @@ export class TerrainGenerator {
   if(!Number.isFinite(x)||!Number.isFinite(y)||Math.abs(x)>1e8||Math.abs(y)>1e8)throw new Error('Position outside prototype limits');
   const c=this.config,p:Point=[x,y],featureIds:string[]=[];
   let height=(noise(x,y,24,this.seed)-0.5)*2*c.background.roughnessM+(noise(x,y,4,this.seed^17)-0.5)*0.15;
-  const surface:Surface={substrate:c.background.substrate,vegetationDensity:clamp(c.background.vegetationDensity+(noise(x,y,5,this.seed^91)-0.5)*0.3),wetness:'unspecified',waterPresent:false};
+  const surface:Surface={substrate:c.background.substrate,vegetationDensity:clamp(c.background.vegetationDensity+(noise(x,y,5,this.seed^91)-0.5)*0.3),wetness:c.background.wetness??'unspecified',waterPresent:false};
   for(const f of this.features) {
    if(f.geometry.type==='Polygon') {
-    if(!contains(f.geometry,p))continue;featureIds.push(f.id);
+    const inside=contains(f.geometry,p);
+    if(f.kind==='pond') {
+     const rs=f.geometry.coordinates as Point[][];
+     let distance=Infinity;
+     for(const rr of rs)for(let i=1;i<rr.length;i++)distance=Math.min(distance,segmentDistance(p,rr[i-1]!,rr[i]!));
+     const bank=typeof f.properties.bankWidthM==='number'?f.properties.bankWidthM:c.channelBankWidthM;
+     const depth=typeof f.properties.depthM==='number'?f.properties.depthM:c.channelDepthM;
+     if(!inside&&distance>bank)continue;
+     featureIds.push(f.id);
+     if(inside) {
+      height-=depth*smooth(distance/bank);
+      surface.substrate='pond-bed';surface.vegetationDensity=0;
+      surface.waterPresent=f.state.waterPresent===true||f.state.waterPresent==='probable';
+      surface.wetness=surface.waterPresent?'submerged':'unspecified';
+     }else {surface.wetness='saturated';surface.vegetationDensity=clamp(Math.max(surface.vegetationDensity,0.65));}
+     continue;
+    }
+    if(!inside)continue;featureIds.push(f.id);
     const patch=f.properties.surfacePatch as Record<string,unknown>|undefined;
     if(typeof patch?.substrate==='string')surface.substrate=patch.substrate;
+    if(typeof patch?.wetness==='string')surface.wetness=patch.wetness;
     if(patch?.vegetationCover==='dense-low-vegetation')surface.vegetationDensity=clamp(0.82+(noise(x,y,3,this.seed^7)-0.5)*0.18);
     if(patch?.vegetationCover==='patchy-low-vegetation')surface.vegetationDensity=clamp(0.5+(noise(x,y,4,this.seed^9)-0.5)*0.4);
     if(patch?.vegetationCover==='sparse')surface.vegetationDensity=clamp(0.1+(noise(x,y,4,this.seed^9)-0.5)*0.15);
@@ -127,6 +146,33 @@ export class TerrainGenerator {
   for(const patch of this.patches)if(contains(patch.geometry,p)){Object.assign(surface,patch.surfacePatch);height+=patch.heightOffsetM??0;}
   surface.vegetationDensity=clamp(surface.vegetationDensity);
   return {x,y,relativeHeightM:height,surface,featureIds};
+ }
+ /** Separate situated trees; ground height remains unchanged. Centers are scoped to the viewport. */
+ objects(bounds:readonly [number,number,number,number]):GeneratedTree[] {
+  const [xmin,ymin,xmax,ymax]=bounds;
+  if(bounds.some(v=>!Number.isFinite(v))||xmin>xmax||ymin>ymax||Math.max(...bounds.map(Math.abs))>1e8)throw new Error('Invalid object viewport');
+  const result:GeneratedTree[]=[];
+  // Fixed world lattice: overlapping stands do not independently spawn duplicate trees.
+  const spacing=4,qmin=Math.floor(xmin/spacing)-1,qmax=Math.ceil(xmax/spacing)+1;
+  const rmin=Math.floor(ymin/spacing)-1,rmax=Math.ceil(ymax/spacing)+1;
+  if((qmax-qmin+1)*(rmax-rmin+1)>100000)throw new Error('Object viewport exceeds prototype limit');
+  const stands=this.features.filter(f=>f.kind==='tree-stand');
+  for(let q=qmin;q<=qmax;q++)for(let r=rmin;r<=rmax;r++) {
+   const x=q*spacing+(lattice(q,r,this.seed^123)-0.5)*2.4;
+   const y=r*spacing+(lattice(q,r,this.seed^456)-0.5)*2.4;
+   if(x<xmin||x>xmax||y<ymin||y>ymax)continue;
+   const stand=stands.filter(f=>contains(f.geometry,[x,y])).at(-1);
+   if(!stand)continue;
+   const probability=typeof stand.properties.treeProbability==='number'?stand.properties.treeProbability:0.5;
+   if(lattice(q,r,this.seed^789)>probability||this.sample(x,y).surface.waterPresent)continue;
+   const size=lattice(q,r,this.seed^987);
+   const crowns=stand.properties.crownRadiusM as number[]|undefined;
+   const heights=stand.properties.heightM as number[]|undefined;
+   const interpolate=(a:number[]|undefined,fallback:number):number=>a?a[0]!+size*(a[1]!-a[0]!):fallback;
+   result.push({id:`tree:${this.config.worldId}:${q}:${r}`,kind:'tree',x,y,
+    crownRadiusM:interpolate(crowns,1),heightM:interpolate(heights,4),standId:stand.id});
+  }
+  return result;
  }
  cell(q:number,r:number):GeneratedCell {
   const c:Cell={level:0,q,r};neighbors(c); // Validate integer coordinates.

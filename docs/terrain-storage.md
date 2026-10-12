@@ -61,7 +61,9 @@ bytewise address ordering; when swapping them, swap approaches and reverse
 any directional transition. Feature references are constrained to the same world.
 Routine adjacency and parent-side summaries are derived, not stored.
 
-Generator versions must remain immutable once referenced. JSON structures,
+Generator revisions identify rule releases and cache contents; designers may upgrade
+regions to newer rules. Seeds reproduce the current chosen rules, not an
+unconditionally frozen world. JSON structures,
 inheritance/override precedence, cell addressing, and generator behavior remain
 design questions; this migration intentionally does not choose them.
 No database migration is applied merely by installing these files.

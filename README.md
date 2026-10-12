@@ -116,3 +116,13 @@ The quest prototype owns a separate aggregate of entities/effects/events and pro
 The sparse terrain schema uses PostgreSQL/PostGIS and Prisma migrations, with
 one model file per table. See [terrain storage](docs/terrain-storage.md) for
 setup, commands, geometry access, and remaining design questions.
+
+### Geography experiments
+
+- `npm run prototype:hex`: verify seven-cell aggregation.
+- `npm run prototype:terrain`: Iceland terrain generation.
+- `npm run prototype:wetland`: wetland basins and separate tree placement.
+
+See [terrain generation](docs/terrain-generation.md),
+[wetland example](docs/wetland-terrain-test.md), and
+[target vocabulary](docs/targets-and-geography.md).

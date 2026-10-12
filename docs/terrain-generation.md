@@ -74,3 +74,12 @@ Tests cover overlap/request-order determinism, feature ordering independence,
 channel versus water state, ridge and cliff profiles, closed-loop relative
 height consistency, persistent edit precedence, seed variation, and invalid
 requests. The full existing prototype suite also runs unchanged.
+
+## Wetland extension
+
+The second example adds polygon pond basins with smoothly tapered synthetic
+depths and saturated outside margins; an explicit wet-ground patch; and tree
+stands that produce separate situated objects. Tree crowns/heights do not alter
+the terrain height field. Object placement shares coordinate-based determinism.
+The common renderer adapts to viewport aspect ratio and overlays trees only on
+the surface panel. See `wetland-terrain-test.md` and `prototype:wetland`.

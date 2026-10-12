@@ -146,3 +146,13 @@ Architecture decision record. Dates indicate when decisions or deferrals were re
   escarpments, and final local edits against the Iceland example.
 - Synthetic height/profile values are explicit editable assumptions, not photo
   measurements. See `terrain-generation.md` for limitations and run commands.
+
+## Wetland terrain experiment — 2026-10-12
+
+- Model pond basins independently of current standing water and shore wetness.
+- Generate trees from authored stands as separate situated entities with stable
+  identities; do not treat canopy height as ground relief.
+- Preserve deterministic overlap for terrain and object queries; avoid water-covered
+  tree roots. Wetland example values remain explicit illustrative assumptions.
+- Preserve the earlier purposeful-response table and target/geography vocabulary
+  in `purposeful-responses.md` and `targets-and-geography.md` for later work.
