@@ -1,0 +1,17 @@
+model TerrainFeature {
+  id                 String                                   @id @default(uuid()) @db.Uuid
+  worldId            String                                   @map("world_id") @db.Uuid
+  kind               String
+  name               String?
+  geometry           Unsupported("geometry(Geometry, 0)")
+  influenceFootprint Unsupported("geometry(MultiPolygon, 0)") @map("influence_footprint")
+  properties         Json                                     @default("{}")
+  state              Json                                     @default("{}")
+  revision           BigInt                                   @default(1)
+  world              World                                    @relation(fields: [worldId], references: [id], onDelete: Restrict)
+  boundaries         TerrainBoundary[]
+
+  @@unique([worldId, id])
+  @@index([worldId, kind])
+  @@map("terrain_feature")
+}

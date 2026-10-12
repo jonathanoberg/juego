@@ -110,3 +110,9 @@ Bindings independently choose prior-completion allow/fresh and latch/recheck. Hi
 Quest-stage/quest-lifetime effects clean up on exit/terminal status using provenance. Abandonment and failure grant no rewards. Terminal completion, world rewards, cleanup, and receipts commit together; an invalid reward leaves the pre-completion aggregate intact. A reward receipt is unique to a quest instance and reward ID. Repeatable quests and eligibility for accepting additional instances are not yet restricted. Item grants use carried placement without automatically stowing them; character carrying capacity is still deferred. Optional world-placement rewards use the participant’s symbolic location (unknown-location policy needs further design).
 
 The quest prototype owns a separate aggregate of entities/effects/events and progresses through explicit calls; integration with the central dispatcher/transaction engine, multiplayer participants, narrative choice transitions, location geometry, generic quest action modules, full content-schema validation, and persistence remain future work.
+
+## Terrain database
+
+The sparse terrain schema uses PostgreSQL/PostGIS and Prisma migrations, with
+one model file per table. See [terrain storage](docs/terrain-storage.md) for
+setup, commands, geometry access, and remaining design questions.

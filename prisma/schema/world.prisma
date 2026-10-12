@@ -1,0 +1,12 @@
+model World {
+  id             String            @id @default(uuid()) @db.Uuid
+  name           String
+  baseHexEdgeM   Float             @default(1) @map("base_hex_edge_m")
+  gridDefinition Json              @map("grid_definition")
+  regions        TerrainRegion[]
+  features       TerrainFeature[]
+  overrides      TerrainOverride[]
+  boundaries     TerrainBoundary[]
+
+  @@map("world")
+}

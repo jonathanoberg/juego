@@ -1,0 +1,20 @@
+model TerrainBoundary {
+  id           String                                      @id @default(uuid()) @db.Uuid
+  worldId      String                                      @map("world_id") @db.Uuid
+  cellAAddress String                                      @map("cell_a_address")
+  cellBAddress String                                      @map("cell_b_address")
+  level        Int
+  geometry     Unsupported("geometry(MultiLineString, 0)")
+  approachA    Json                                        @default("{}") @map("approach_a")
+  approachB    Json                                        @default("{}") @map("approach_b")
+  transition   Json                                        @default("{}")
+  constraints  Json                                        @default("{}")
+  featureId    String?                                     @map("feature_id") @db.Uuid
+  revision     BigInt                                      @default(1)
+  world        World                                       @relation(fields: [worldId], references: [id], onDelete: Restrict)
+  feature      TerrainFeature?                             @relation(fields: [worldId, featureId], references: [worldId, id], onDelete: Restrict, onUpdate: NoAction)
+
+  @@unique([worldId, level, cellAAddress, cellBAddress])
+  @@index([worldId, featureId])
+  @@map("terrain_boundary")
+}

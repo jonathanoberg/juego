@@ -1,0 +1,28 @@
+model TerrainRegion {
+  id               String                                   @id @default(uuid()) @db.Uuid
+  worldId          String                                   @map("world_id") @db.Uuid
+  parentId         String?                                  @map("parent_id") @db.Uuid
+  cellAddress      String                                   @map("cell_address")
+  level            Int
+  /// Slot within the immediate geometric parent, not necessarily the stored ancestor.
+  childSlot        Int?                                     @map("child_slot") @db.SmallInt
+  name             String?
+  terrainLabel     String?                                  @map("terrain_label")
+  footprint        Unsupported("geometry(MultiPolygon, 0)")
+  surfaceDefaults  Json                                     @default("{}") @map("surface_defaults")
+  reliefDefaults   Json                                     @default("{}") @map("relief_defaults")
+  constraints      Json                                     @default("{}")
+  generatorId      String?                                  @map("generator_id") @db.Uuid
+  generationSeed   BigInt?                                  @map("generation_seed")
+  generationParams Json                                     @default("{}") @map("generation_params")
+  revision         BigInt                                   @default(1)
+  world            World                                    @relation(fields: [worldId], references: [id], onDelete: Restrict)
+  parent           TerrainRegion?                           @relation("RegionHierarchy", fields: [worldId, parentId], references: [worldId, id], onDelete: Restrict, onUpdate: NoAction)
+  children         TerrainRegion[]                          @relation("RegionHierarchy")
+  generator        TerrainGenerator?                        @relation(fields: [generatorId], references: [id], onDelete: Restrict)
+
+  @@unique([worldId, id])
+  @@unique([worldId, cellAddress])
+  @@index([parentId])
+  @@map("terrain_region")
+}

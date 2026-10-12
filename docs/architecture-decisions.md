@@ -112,3 +112,15 @@ Architecture decision record. Dates indicate when decisions or deferrals were re
 | Keep persistent item-reward effects separate from temporary quest effects. | The granted fire sword receives its own lasting enchantment and remains enchanted after quest protection cleanup. | 2026-10-08 |
 | Provisional: a three-stage mage quest requires Sword Wizard level ten and an equipped ring, then grants strength, Flame, and a fire sword. | The fixture tests acceptance, parallel collection/dialogue, actual ten-item delivery, and atomic rewards. Sample narrative and balance values are illustrative. | 2026-10-08 |
 | Defer dialogue choice branches, shared-party credit, geographic geometry, and a unified quest/game transaction engine. | The prototype is a separate in-memory aggregate. Fire protection is represented as a descriptive/status effect; actual typed fire mitigation is not implemented in current slicing-only combat. Repeatability, joins, event dispatch, and durable evidence need further design. | 2026-10-08 |
+
+## Terrain persistence — 2026-10-12
+
+- Use PostgreSQL/PostGIS with Prisma migrations and one `.prisma` file per table.
+- Use a one-meter base hex edge and recursive seven-cell aggregation; exact
+  aggregate footprints may be jagged while broad map outlines are approximations.
+- Persist sparse specifications, features, boundary constraints, and overrides;
+  derive ordinary cells instead of storing every level of the hierarchy.
+- Separate interior surface from relief; omit absolute elevation.
+- Preserve same-world ancestor and feature references with composite foreign keys.
+- Defer cell addressing, JSON contracts, inheritance precedence, and generation
+  algorithms. See `terrain-storage.md` for the initial persistence model.

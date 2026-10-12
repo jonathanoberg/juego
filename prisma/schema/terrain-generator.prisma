@@ -1,0 +1,11 @@
+model TerrainGenerator {
+  id                String          @id @default(uuid()) @db.Uuid
+  name              String
+  version           Int
+  implementationKey String          @map("implementation_key")
+  parameters        Json            @default("{}")
+  regions           TerrainRegion[]
+
+  @@unique([name, version])
+  @@map("terrain_generator")
+}

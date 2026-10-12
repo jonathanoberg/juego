@@ -1,0 +1,15 @@
+model TerrainOverride {
+  id           String                                   @id @default(uuid()) @db.Uuid
+  worldId      String                                   @map("world_id") @db.Uuid
+  footprint    Unsupported("geometry(MultiPolygon, 0)")
+  priority     Int                                      @default(0)
+  surfacePatch Json                                     @default("{}") @map("surface_patch")
+  reliefPatch  Json                                     @default("{}") @map("relief_patch")
+  constraints  Json                                     @default("{}")
+  cause        String?
+  revision     BigInt                                   @default(1)
+  world        World                                    @relation(fields: [worldId], references: [id], onDelete: Restrict)
+
+  @@index([worldId])
+  @@map("terrain_override")
+}
