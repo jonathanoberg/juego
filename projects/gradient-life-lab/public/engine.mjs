@@ -1,6 +1,6 @@
 export const N=20, dirs=[[0,-1,'N'],[1,-1,'NE'],[1,0,'E'],[1,1,'SE'],[0,1,'S'],[-1,1,'SW'],[-1,0,'W'],[-1,-1,'NW']];
 export class World{
- constructor(seed=42,options={}){this.opt={radius:10,metabolism:.04,growth:.5,grace:6,regen:.01,diffusion:.08,divisionWait:5,divisionChance:.1,crowdThreshold:5,dartDistance:3,painWeight:6,painDecay:.8,reproductionAge:150,declineAge:220,declineChance:.25,declineAmount:.25,...options};this.seed=seed>>>0;this.tick=0;this.cells=Array.from({length:400},()=>({f:0,p:0,a:null,hunger:0,pain:0,spore:0,plantTicks:0}));this.divisions=0;this.darts=0;this.ageDeaths=0;this.departures=0;this.sporesMade=0;this.germinations=0;this.nextId=1;for(let k=0;k<32;k++)this.pick(c=>!c.f).f=10;for(let k=0;k<12;k++)this.pick(c=>c.f===10&&!c.p).p=1;for(let k=0;k<7;k++)this.pick(c=>!c.a&&c.f+c.p<=10).a={id:this.nextId++,size:1,energy:3,age:0};this.history=[];this.record();}
+ constructor(seed=42,options={}){this.opt={radius:10,metabolism:.04,growth:.5,grace:6,regen:.01,diffusion:.08,divisionWait:5,divisionChance:.1,crowdThreshold:5,dartDistance:3,painWeight:6,painDecay:.8,reproductionAge:150,declineAge:220,declineChance:.25,declineAmount:.25,...options};this.seed=seed>>>0;this.tick=0;this.cells=Array.from({length:400},()=>({f:0,p:0,a:null,hunger:0,pain:0,spore:0}));this.divisions=0;this.darts=0;this.ageDeaths=0;this.departures=0;this.squareTicks=Array(400).fill(0);this.sporesMade=0;this.germinations=0;this.nextId=1;for(let k=0;k<32;k++)this.pick(c=>!c.f).f=10;for(let k=0;k<12;k++)this.pick(c=>c.f===10&&!c.p).p=1;for(let k=0;k<7;k++)this.pick(c=>!c.a&&c.f+c.p<=10).a={id:this.nextId++,size:1,energy:3,age:0};this.history=[];this.record();}
  random(){this.seed=(1664525*this.seed+1013904223)>>>0;return this.seed/4294967296;}
  pick(pred){let a=this.cells.filter(pred);return a[Math.floor(this.random()*a.length)];}
  neighbors(i){let x=i%N,y=Math.floor(i/N);return dirs.map(([dx,dy,label])=>({x:x+dx,y:y+dy,label})).filter(q=>q.x>=0&&q.x<N&&q.y>=0&&q.y<N).map(q=>({...q,i:q.y*N+q.x}));}
@@ -23,20 +23,23 @@ export class World{
  // Thread growth transfers existing biomass; the rest of the connected network feeds the tip.
  let candidates=[];for(let i of group)for(let q of this.neighbors(i))if(this.cells[q.i].p===0&&!this.cells[q.i].spore&&11-this.total(this.cells[q.i])>=.2){let signal=signals[i].find(g=>g.label===q.label).f;candidates.push({...q,from:i,foodScore:this.cells[q.i].f+signal,score:this.cells[q.i].f+signal-this.opt.painWeight*this.damagePotential(q.i)});}
  candidates=candidates.filter(q=>q.foodScore>0);this.shuffle(candidates);candidates.sort((a,b)=>b.score-a.score);let tip=candidates[0];
- if(tip&&tip.foodScore>0&&mass>=1.5){let donors=group.filter(i=>this.cells[i].p>.4).sort((a,b)=>this.cells[b].p-this.cells[a].p);if(donors.length){this.cells[donors[0]].p-=.2;this.cells[tip.i].p=.2;this.cells[tip.i].hunger=0;this.cells[tip.i].plantTicks=0;group.push(tip.i);}}
+ if(tip&&tip.foodScore>0&&mass>=1.5){let donors=group.filter(i=>this.cells[i].p>.4).sort((a,b)=>this.cells[b].p-this.cells[a].p);if(donors.length){this.cells[donors[0]].p-=.2;this.cells[tip.i].p=.2;this.cells[tip.i].hunger=0;group.push(tip.i);}}
  // No stored energy: connected food is converted into mass where growth has room.
  let budget=this.opt.growth*group.length;for(let i of this.shuffle([...group])){let c=this.cells[i],need=Math.min(this.opt.growth,budget,10-c.p,Math.max(0,11-this.total(c))+c.f);if(need<=0)continue;let food=group.reduce((s,j)=>s+this.cells[j].f,0),amount=Math.min(need,food); // Consumption can free local capacity.
  let local=Math.min(c.f,amount);c.f-=local;let other=amount-local,room=Math.max(0,11-this.total(c));let actual=Math.min(amount,room);if(actual<local){c.f+=local-actual;local=actual;other=0;}else other=actual-local;
  consume(other);c.p+=actual;budget-=actual;if(budget<=0)break;}
  }}
  germinateSpores(){const snapshot=this.cells.map(c=>({...c}));for(let i=0;i<400;i++){let c=this.cells[i],before=snapshot[i];if(!before.spore||before.a||before.p>0||before.f<=0)continue;
- if(this.neighbors(i).every(q=>snapshot[q.i].p===0&&!snapshot[q.i].a&&!snapshot[q.i].spore)){c.spore=0;c.p=1;c.hunger=0;c.plantTicks=0;this.germinations++;}}
+ if(this.neighbors(i).every(q=>snapshot[q.i].p===0&&!snapshot[q.i].a&&!snapshot[q.i].spore)){c.spore=0;c.p=1;c.hunger=0;this.germinations++;}}
  }
- reproducePlants(){const groups=this.networks();for(let c of this.cells)if(c.p<=0)c.plantTicks=0;
- for(let group of groups){for(let i of group)this.cells[i].plantTicks=group.length>=4?(this.cells[i].plantTicks||0)+1:0;
- if(group.filter(i=>this.cells[i].plantTicks>=3).length<4)continue;
- const choices=group.filter(i=>this.cells[i].plantTicks>=3&&this.cells[i].p>=1&&!this.cells[i].spore);if(!choices.length)continue;
- const i=choices[Math.floor(this.random()*choices.length)],c=this.cells[i];c.p=0;c.spore=1;c.hunger=0;for(let j of group)this.cells[j].plantTicks=0;this.sporesMade++;
+ squareCells(i){return i%N<N-1&&i<N*(N-1)?[i,i+1,i+N,i+N+1]:[];}
+ reproducePlants(){const eligible=[];
+ for(let i=0;i<400;i++){let square=this.squareCells(i),full=square.length===4&&square.every(j=>this.cells[j].p>0&&!this.cells[j].spore);this.squareTicks[i]=full?this.squareTicks[i]+1:0;if(this.squareTicks[i]>=3)eligible.push({anchor:i,square});}
+ // At most one spore per connected network; only cells in a qualifying square may become spores.
+ for(let group of this.networks()){let members=new Set(group),squares=this.shuffle(eligible.filter(q=>q.square.every(i=>members.has(i))));
+ let chosen=squares.find(q=>q.square.some(i=>this.cells[i].p>=1));if(!chosen)continue;
+ let choices=chosen.square.filter(i=>this.cells[i].p>=1),i=choices[Math.floor(this.random()*choices.length)],c=this.cells[i];c.p=0;c.spore=1;c.hunger=0;this.sporesMade++;
+ for(let anchor=0;anchor<400;anchor++)if(this.squareCells(anchor).some(i=>members.has(i)))this.squareTicks[anchor]=0;
  }}
  divide(i){let c=this.cells[i],a=c.a;if(!a||(a.age||0)>=this.opt.reproductionAge||a.size<10||(a.maxTicks||0)<this.opt.divisionWait)return false;
  const size=a.size*.3,choices=this.neighbors(i).filter(q=>!this.cells[q.i].a&&this.total(this.cells[q.i])+size<=11);
