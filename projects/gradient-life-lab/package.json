@@ -1,0 +1,9 @@
+{
+  "name": "gradient-life-lab",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node tests/networks.mjs && node tests/division.mjs",
+    "sync-site": "node scripts/sync-site.mjs"
+  }
+}

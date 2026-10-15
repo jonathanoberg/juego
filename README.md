@@ -126,3 +126,7 @@ setup, commands, geometry access, and remaining design questions.
 See [terrain generation](docs/terrain-generation.md),
 [wetland example](docs/wetland-terrain-test.md), and
 [target vocabulary](docs/targets-and-geography.md).
+
+## Independent experiments
+
+- [Gradient Life Lab](projects/gradient-life-lab/README.md): a browser-based ecological simulation with connected plant networks, food diffusion, mobile animals, and probabilistic division. This folder is its canonical source; see its README for local use and publishing synchronization.
