@@ -1,6 +1,6 @@
 # Gradient Life Lab
 
-An exploratory 20×20 cellular ecosystem: local directional signals, slime-mold-like connected plant networks, diffusing nutrients, mobile grazers, and probabilistic animal division. This is a behavioral experiment, not a biologically validated model or a learning agent.
+An exploratory 80×80 cellular ecosystem: local directional signals, slime-mold-like connected plant networks, diffusing nutrients, mobile grazers, and probabilistic animal division. This is a behavioral experiment, not a biologically validated model or a learning agent.
 
 Live private sandbox: https://gradient-life-lab.jonathanoberg.chatgpt.site
 
@@ -24,7 +24,7 @@ Tests cover nutrient conservation during diffusion, disabling diffusion, network
 ## Model and current defaults
 
 - Cells share an 11-unit capacity across food (0–10), plant mass (0–10), and at most one animal (size 1–10). Quantities are fractional. Edges do not wrap. Plants and diffusion remain bounded; animal movement can leave the world.
-- Start with 32 food cells at 10, 12 plant cells at 1 rooted in food, and seven size-1 animals with energy 3. Default seed: 42.
+- Start with 512 food cells at 10, 192 plant cells at 1 rooted in food, and 112 size-1 animals with energy 3. Default seed: 42.
 - Eight directional signals sum quantity divided by distance within radius 10, excluding the observing cell. Signals convey information; they do not move nutrients.
 - Food diffuses between orthogonal neighbors down concentration differences, at default rate 0.08 divided among four directions. Snapshot transfers conserve food and respect capacity.
 - Food renewal independently adds up to 0.01 per cell per tick, subject to capacity. Zero disables external replenishment.
@@ -72,7 +72,7 @@ Spores persist indefinitely, cannot be eaten, consume no food, and block plant e
 
 All simulation controls are captured at reset, including environment, mutation settings, and founder traits. Editing controls during a run only sets up the next reset. Playback speed is live and changes wall-clock pacing only. Run options and genomes are immutable copies.
 
-Plant genes: sensing radius, growth rate, starvation grace, damage avoidance. Animal genes: sensing radius, metabolism, mitosis wait/probability, crowd threshold, escape distance, reproductive cutoff, decline age/probability/amount, mating probability and gestation ticks. Founders receive the configured values. A plant organism has a stable ID/genome across its growing threads; touching organisms share nutrients without merging ancestry. A fragmented organism retains its ancestry/genome.
+Plant genes: sensing radius, growth rate, starvation grace, damage avoidance. Animal genes: sensing radius, metabolism, mitosis wait/probability, crowd threshold, escape distance, reproductive cutoff, decline age/probability/amount, mating probability, male mate-seeking tendency and gestation ticks. Founders receive the configured values. A plant organism has a stable ID/genome across its growing threads; touching organisms share nutrients without merging ancestry. A fragmented organism retains its ancestry/genome.
 
 The four cells of a qualifying spore square can come from multiple plant parents. For each child attribute, pick uniformly among DISTINCT contributing parents (not weighted by occupied cell count), then independently apply plant mutation probability. For a single-parent spore the child is clonal before mutation. The parent arrangement in the square must remain unchanged while its maturity timer runs. Spore genes and all parent IDs are stored at spore creation and retained through germination. Mitosis independently clones/mutates each daughter's genome. Sexual offspring independently pick each attribute from either parent's genome, then mutate. Defaults: 5% mutation chance per attribute for each species, with a ±10% change. Discrete traits use symmetric steps of at least one; fractions may round to a different effective percentage. Traits are bounded to model ranges; decline age is constrained to be no earlier than reproductive cutoff. Zero-valued continuous traits remain zero under percentage mutation. Mutation settings are run parameters, not genes.
 
@@ -85,3 +85,13 @@ Earlier rule descriptions above describe the initial common traits; the actual b
 Verification for genetics/mating additionally covers frozen controls and pending UI settings in a DOM harness, independent crossover, mutation bounds and direction, multiple plant parents, genotype-specific growth/crowding, mating eligibility/contact reset, stationary gestation, newborn age, empty/plant-space birth placement, blocked births, and partner death. Browser interaction remains unverified.
 
 Adjacent dormant spores do not block germination. The germination pass uses one shared snapshot, so neighboring spores with food can germinate simultaneously before either new plant can block the other. The inspector counts neighboring spores for information, but does not list them as blockers.
+
+## Male reproductive attraction
+
+Fertile males of size >=6 use inherited `mateDrive` (default 0.65) as their per-tick chance to seek a mate. They sense available fertile females (size >=4, below their own reproductive cutoffs, not gestating) within their individual sensing radius. A breadth-first search over capacity-valid neighboring cells finds a shortest route to a position beside a female. They move only one step per tick, and remain adjacent on successful seeking ticks to build the existing two-tick contact requirement. Seeking can override feeding-location loyalty and mitosis; they may eat at their destination. Crowd escape and gestation take precedence. No extra movement-energy cost is added. Value zero disables attraction. This is a heritable/mutable animal trait and the inspector shows the targeted female ID. All settings remain reset-only.
+
+## 80×80 world and tiled display
+
+The default world is 80×80 (6,400 independently simulated cells). The display retains 20×20 bold tiles, each subdivided into 4×4 cells. Capacity, food, movement, signals, mating, and 2×2 spore squares all operate on the small cells, not the display tiles. Click any small cell to inspect its 0–79 coordinates and containing tile. The exterior remains open to animals. Founder counts scale by area to preserve density: 512 food cells, 192 plant founders, 112 animals. Signal radius and movement distances retain their units of simulation cells.
+
+The engine accepts a `size` option for tests; legacy fixtures intentionally run on 20×20 boards. Independent large-board tests cover dimensions, seeding density, fine-grid boundary and tile crossings, sensing, spore geometry and capacity. Directional fields use cached local kernels rather than all-to-all scans; sensing is computed lazily only for organisms that need it. Shared nutrient consumption uses a cursor rather than rescanning depleted resource cells.

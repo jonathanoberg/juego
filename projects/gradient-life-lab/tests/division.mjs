@@ -1,4 +1,4 @@
-import assert from 'node:assert/strict';import{World}from'../public/engine.mjs';
+import assert from 'node:assert/strict';import{World as BaseWorld}from'../public/engine.mjs';class World extends BaseWorld{constructor(seed=42,options={}){super(seed,{size:20,...options});}}
 function fixture(opt={}){let w=new World(42,{diffusion:0,regen:0,metabolism:0,growth:0,divisionWait:3,divisionChance:1,crowdThreshold:9,...opt});w.cells.forEach(c=>{c.f=0;c.p=0;c.a=null});w.cells[210].a={id:w.nextId++,size:10,energy:20,maxTicks:0};return w;}
 let w=fixture();w.step();assert.equal(w.divisions,0);w.step();assert.equal(w.divisions,0);w.step();assert.equal(w.divisions,1);let daughters=w.cells.flatMap(c=>c.a?[c.a]:[]);assert.equal(daughters.length,2);assert(daughters.every(a=>a.size===3&&a.energy===6&&a.maxTicks===0));assert.equal(new Set(daughters.map(a=>a.id)).size,2);assert.equal(daughters[0].parentId,daughters[1].parentId);
 let blocked=fixture();for(let q of blocked.neighbors(210))blocked.cells[q.i].f=10;for(let t=0;t<5;t++)blocked.step();assert.equal(blocked.divisions,0);blocked.cells[211].f=8;blocked.step();assert.equal(blocked.divisions,1);
