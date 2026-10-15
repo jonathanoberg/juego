@@ -1,13 +1,15 @@
+import{memoryMethods}from'./memory.mjs';
+import{evolutionMethods}from'./evolution.mjs';
 import{plantTraits,animalTraits,genome,inherit}from'./genetics.mjs';
 import{matingMethods}from'./mating.mjs';
 export const N=80, dirs=[[0,-1,'N'],[1,-1,'NE'],[1,0,'E'],[1,1,'SE'],[0,1,'S'],[-1,1,'SW'],[-1,0,'W'],[-1,-1,'NW']];
 export class World{
- constructor(seed=42,options={}){this.opt={size:80,radius:10,metabolism:.04,growth:.5,grace:6,regen:.01,diffusion:.08,divisionWait:5,divisionChance:.1,crowdThreshold:5,dartDistance:3,painWeight:6,painDecay:.8,reproductionAge:150,declineAge:220,declineChance:.25,declineAmount:.25,matingChance:.1,mateDrive:.65,gestationTicks:5,plantMutationChance:.05,animalMutationChance:.05,mutationPercent:10,...options};this.n=Math.max(4,Math.min(160,Math.floor(this.opt.size)));Object.defineProperty(this,'opt',{value:Object.freeze(this.opt),writable:false});this.initialPlantGenes=genome(this.opt,plantTraits);this.initialAnimalGenes=genome(this.opt,animalTraits);this.plants=new Map();this.nextPlantId=1;this.contacts=new Map();this.gestations=[];this.nextMating=1;this.matings=0;this.sexualBirths=0;this.seed=seed>>>0;this.tick=0;this.cells=Array.from({length:this.n*this.n},()=>({f:0,p:0,a:null,hunger:0,pain:0,spore:0}));this.divisions=0;this.darts=0;this.ageDeaths=0;this.departures=0;this.squareTicks=Array(this.n*this.n).fill(0);this.squareParents=Array(this.n*this.n).fill('');this.sporesMade=0;this.germinations=0;this.nextId=1;for(let k=0;k<Math.round(32*(this.n/20)**2);k++)this.pick(c=>!c.f).f=10;for(let k=0;k<Math.round(12*(this.n/20)**2);k++)this.pick(c=>c.f===10&&!c.p).p=1;for(let k=0;k<Math.round(7*(this.n/20)**2);k++)this.pick(c=>!c.a&&c.f+c.p<=10).a={id:this.nextId++,size:1,energy:3,age:0};for(let c of this.cells){if(c.p)c.plantId=this.newPlant().id;if(c.a)this.animalGenes(c.a);}this.history=[];this.record();}
+ constructor(seed=42,options={}){this.opt={size:80,radius:10,metabolism:.04,growth:.5,grace:6,regen:.01,diffusion:.08,divisionWait:5,divisionChance:.1,crowdThreshold:5,dartDistance:3,painWeight:6,painDecay:.8,reproductionAge:150,declineAge:220,declineChance:.25,declineAmount:.25,matingChance:.1,mateDrive:.65,gestationTicks:5,memoryTicks:30,memoryCapacity:8,memoryStrength:2,femaleBirthRatio:.5,foodSexBias:0,animalSenseCost:.0005,plantSenseCost:.0001,fastGrowthCost:.5,memoryCost:.002,plantMutationChance:.05,animalMutationChance:.05,mutationPercent:10,...options};this.n=Math.max(4,Math.min(160,Math.floor(this.opt.size)));Object.defineProperty(this,'opt',{value:Object.freeze(this.opt),writable:false});this.initialPlantGenes=genome(this.opt,plantTraits);this.initialAnimalGenes=genome(this.opt,animalTraits);this.plants=new Map();this.nextPlantId=1;this.contacts=new Map();this.gestations=[];this.nextMating=1;this.matings=0;this.sexualBirths=0;this.starvationDeaths=0;this.sexEvents=Object.fromEntries(['male','female'].map(k=>[k,{births:0,ageDeaths:0,starvationDeaths:0,departures:0,deaths:0,deathAgeTotal:0}]));this.evolutionHistory=[];this.evolutionStride=5;this.seed=seed>>>0;this.tick=0;this.cells=Array.from({length:this.n*this.n},()=>({f:0,p:0,a:null,hunger:0,pain:0,spore:0}));this.divisions=0;this.darts=0;this.ageDeaths=0;this.departures=0;this.squareTicks=Array(this.n*this.n).fill(0);this.squareParents=Array(this.n*this.n).fill('');this.sporesMade=0;this.germinations=0;this.nextId=1;for(let k=0;k<Math.round(32*(this.n/20)**2);k++)this.pick(c=>!c.f).f=10;for(let k=0;k<Math.round(12*(this.n/20)**2);k++)this.pick(c=>c.f===10&&!c.p).p=1;for(let k=0;k<Math.round(7*(this.n/20)**2);k++)this.pick(c=>!c.a&&c.f+c.p<=10).a={id:this.nextId++,size:1,energy:3,age:0};for(let c of this.cells){if(c.p)c.plantId=this.newPlant().id;if(c.a)this.animalGenes(c.a);}this.history=[];this.record();}
  newPlant(genes=this.initialPlantGenes,parentIds=[]){if(!Array.isArray(parentIds))parentIds=parentIds?[parentIds]:[];let p={id:this.nextPlantId++,genes:Object.freeze({...genes}),parentIds:[...parentIds],generation:parentIds.length?Math.max(...parentIds.map(id=>this.plants.get(id)?.generation||0))+1:0};this.plants.set(p.id,p);return p;}
  ensurePlants(){for(let group of this.networks()){let existing=group.find(i=>this.cells[i].plantId&&this.plants.has(this.cells[i].plantId)),id=existing===undefined?null:this.cells[existing].plantId;for(let i of group)if(!this.cells[i].plantId||!this.plants.has(this.cells[i].plantId)){id??=this.newPlant().id;this.cells[i].plantId=id;}}}
  plantGenes(c){return this.plants.get(c.plantId)?.genes||this.initialPlantGenes;}
- animalGenes(a){if(!a.genes)a.genes=Object.freeze({...this.initialAnimalGenes});if(!a.gender)a.gender=this.random()<.5?'female':'male';return a.genes;}
- newAnimal(genes=this.initialAnimalGenes,values={}){return {id:this.nextId++,size:1,energy:3,age:0,maxTicks:0,generation:0,gender:this.random()<.5?'female':'male',genes:Object.freeze({...genes}),...values};}
+ animalGenes(a){if(!a.genes)a.genes=Object.freeze({...this.initialAnimalGenes});if(!a.gender)a.gender=this.birthGender(a.genes);return a.genes;}
+ newAnimal(genes=this.initialAnimalGenes,values={}){const a={id:this.nextId++,size:1,energy:3,age:0,maxTicks:0,generation:0,memory:[],genes:Object.freeze({...genes}),...values};a.gender=values.gender||this.birthGender(a.genes,values.birthCell);return a;}
  inheritAnimal(a,b=null){return inherit(this,'animal',a,b);}
  random(){this.seed=(1664525*this.seed+1013904223)>>>0;return this.seed/4294967296;}
  pick(pred){let a=this.cells.filter(pred);return a[Math.floor(this.random()*a.length)];}
@@ -25,7 +27,7 @@ export class World{
  }
  damagePotential(i,radius=this.opt.radius){let x=i%this.n,y=Math.floor(i/this.n),value=this.cells[i].pain||0;for(let q of this.kernel(radius)){let nx=x+q.dx,ny=y+q.dy;if(nx>=0&&ny>=0&&nx<this.n&&ny<this.n)value+=(this.cells[ny*this.n+nx].pain||0)*q.weight;}return value;}
  graze(i,amount){let c=this.cells[i],meal=Math.max(0,Math.min(c.p,amount));c.p-=meal;c.pain=Math.min(10,(c.pain||0)+meal);return meal;}
- growPlants(signals){this.ensurePlants();for(let group of this.shuffle(this.networks())){let mass=group.reduce((s,i)=>s+this.cells[i].p,0),available=group.reduce((s,i)=>s+this.cells[i].f,0),maintenance=.01*mass,used=0,cursor=0;
+ growPlants(signals){this.ensurePlants();for(let group of this.shuffle(this.networks())){let mass=group.reduce((s,i)=>s+this.cells[i].p,0),available=group.reduce((s,i)=>s+this.cells[i].f,0),maintenance=.01*mass+group.reduce((s,i)=>s+this.opt.plantSenseCost*this.plantGenes(this.cells[i]).radius**2,0),used=0,cursor=0;
  const consume=amount=>{let remaining=amount;while(cursor<group.length&&remaining>1e-12){let c=this.cells[group[cursor]],take=Math.min(c.f,remaining);c.f-=take;remaining-=take;if(c.f<=1e-12)cursor++;}available-=amount-remaining;used+=amount-remaining;return amount-remaining;};
  let paid=consume(Math.min(available,maintenance)),fed=paid+1e-9>=maintenance;
  for(let i of group){let c=this.cells[i];c.hunger=fed?0:c.hunger+1;if(c.hunger>this.plantGenes(c).grace)c.p=Math.max(0,c.p-.15);}
@@ -35,9 +37,8 @@ export class World{
  candidates=candidates.filter(q=>q.foodScore>0);this.shuffle(candidates);candidates.sort((a,b)=>b.score-a.score);let tip=candidates[0];
  if(tip&&tip.foodScore>0&&mass>=1.5){let donors=group.filter(i=>this.cells[i].p>.4).sort((a,b)=>this.cells[b].p-this.cells[a].p);if(donors.length){this.cells[donors[0]].p-=.2;this.cells[tip.i].p=.2;this.cells[tip.i].plantId=this.cells[tip.from].plantId;this.cells[tip.i].hunger=0;group.push(tip.i);}}
  // No stored energy: connected food is converted into mass where growth has room.
- let budget=group.reduce((s,i)=>s+this.plantGenes(this.cells[i]).growth,0);for(let i of this.shuffle([...group])){let c=this.cells[i],need=Math.min(this.plantGenes(c).growth,budget,10-c.p,Math.max(0,11-this.total(c))+c.f);if(need<=0)continue;let amount=Math.min(need,Math.max(0,available)); // Consumption can free local capacity.
- let local=Math.min(c.f,amount);c.f-=local;available-=local;let other=amount-local,room=Math.max(0,11-this.total(c));let actual=Math.min(amount,room);if(actual<local){c.f+=local-actual;available+=local-actual;local=actual;other=0;}else other=actual-local;
- consume(other);c.p+=actual;budget-=actual;if(budget<=0)break;}
+ let budget=group.reduce((s,i)=>s+this.plantGenes(this.cells[i]).growth,0);for(let i of this.shuffle([...group])){let c=this.cells[i],rate=this.plantGenes(c).growth,factor=1+this.opt.fastGrowthCost*rate,need=Math.min(rate,budget,10-c.p,Math.max(0,11-this.total(c))+c.f);if(need<=0)continue;let amount=Math.min(need,Math.max(0,available)/factor),cost=amount*factor;
+ let local=Math.min(c.f,cost);c.f-=local;available-=local;let actual=Math.min(amount,Math.max(0,11-this.total(c))),actualCost=actual*factor;if(actualCost<local){c.f+=local-actualCost;available+=local-actualCost;local=actualCost;}consume(Math.max(0,actualCost-local));c.p+=actual;budget-=actual;if(budget<=0)break;}
  }}
  sporeStatus(i){let c=this.cells[i],counts={plants:0,animals:0,spores:0};for(let q of this.neighbors(i)){let n=this.cells[q.i];counts.plants+=n.p>0;counts.animals+=!!n.a;counts.spores+=!!n.spore;}return {ready:!!c.spore&&!c.a&&c.p===0&&c.f>0&&!counts.plants&&!counts.animals,food:c.f,ownAnimal:!!c.a,...counts};}
  germinateSpores(){const snapshot=this.cells.map(c=>({...c}));for(let i=0;i<this.cells.length;i++){let c=this.cells[i],before=snapshot[i];if(!before.spore||before.a||before.p>0||before.f<=0)continue;
@@ -56,11 +57,11 @@ export class World{
  const size=a.size*.3,choices=this.neighbors(i).filter(q=>!this.cells[q.i].a&&this.total(this.cells[q.i])+size<=11);
  if(!choices.length||genes.divisionChance<=0||this.random()>=genes.divisionChance)return false;
  let target=choices[Math.floor(this.random()*choices.length)].i;
- const daughter=()=>this.newAnimal(this.inheritAnimal(genes),{parentId:a.id,generation:(a.generation||0)+1,size,energy:Math.max(0,a.energy)*.3});
- c.a=daughter();this.cells[target].a=daughter();this.divisions++;return true;
+ const daughter=where=>{let child=this.newAnimal(this.inheritAnimal(genes),{parentId:a.id,generation:(a.generation||0)+1,size,energy:Math.max(0,a.energy)*.3,birthCell:where});this.noteBirth(child);return child;};
+ c.a=daughter(i);this.cells[target].a=daughter(target);this.divisions++;return true;
  }
  ageAnimal(i){let c=this.cells[i],a=c.a;if(!a)return false;let genes=this.animalGenes(a);a.age=(a.age||0)+1;
- if(a.age>=Math.max(genes.reproductionAge,genes.declineAge)&&genes.declineChance>0&&genes.declineAmount>0&&this.random()<genes.declineChance){a.size-=genes.declineAmount;a.maxTicks=0;if(a.size<1){c.a=null;this.ageDeaths++;return false;}}return true;}
+ if(a.age>=Math.max(genes.reproductionAge,genes.declineAge)&&genes.declineChance>0&&genes.declineAmount>0&&this.random()<genes.declineChance){a.size-=genes.declineAmount;a.maxTicks=0;if(a.size<1){this.noteLoss(a,'ageDeaths');c.a=null;this.ageDeaths++;return false;}}return true;}
  lifeStage(a){let genes=this.animalGenes(a);return (a.age||0)>=Math.max(genes.reproductionAge,genes.declineAge)?'declining':(a.age||0)>=genes.reproductionAge?'post-reproductive':'reproductive';}
  crowdAt(i,cells=this.cells,exclude=-1){return this.neighbors(i).filter(q=>q.i!==exclude&&cells[q.i].a).length;}
  dart(i,snapshot){let a=this.cells[i].a;if(!a)return i;let genes=this.animalGenes(a),threshold=genes.crowdThreshold;
@@ -73,24 +74,24 @@ export class World{
  let crowd=this.crowdAt(q.i,snapshot,i);if(crowd<this.crowdAt(i,snapshot)){let signals=this.gradients(q.i,snapshot,genes.radius);choices.push({...next,crowd,pressure:signals.reduce((s,g)=>s+g.a,0),food:this.cells[q.i].p+signals.reduce((s,g)=>s+g.p,0)});}
  }}
  this.shuffle(choices);choices.sort((a,b)=>a.crowd-b.crowd||a.pressure-b.pressure||b.food-a.food||b.steps-a.steps);
- if(!choices.length)return i;let target=choices[0].i;this.cells[i].a=null;if(target<0)this.departures++;else this.cells[target].a=a;this.darts++;return target;
+ if(!choices.length)return i;let target=choices[0].i;this.cells[i].a=null;if(target<0){this.departures++;this.noteLoss(a,'departures');}else this.cells[target].a=a;this.darts++;return target;
  }
  step(){for(let c of this.cells){c.pain=(c.pain||0)*this.opt.painDecay;if(c.pain<1e-8)c.pain=0;}this.diffuse();this.germinateSpores();
  for(let i=0;i<this.cells.length;i++)if(this.cells[i].a)this.ageAnimal(i);
  const snapshot=this.cells.map(c=>({...c,a:c.a?{...c.a}:null}));
  this._snapshot=snapshot;this._signalCache=new Map();this.growPlants();this.updateMating(snapshot);
  const animals=this.shuffle(snapshot.flatMap((c,i)=>c.a?[{i,id:c.a.id}]:[]));
- for(let {i,id} of animals){let c=this.cells[i],a=c.a;if(!a||a.id!==id)continue;const genes=this.animalGenes(a);const startSize=a.size,origin=i;i=a.mating?i:this.dart(i,snapshot);if(i<0)continue;c=this.cells[i];const darted=i!==origin;let pursuit={i,engaged:false};a.seeking=null;if(!darted&&!a.mating)pursuit=this.seekMate(i,snapshot);i=pursuit.i;c=this.cells[i];let targets=[{i},...this.neighbors(i)].sort((u,v)=>this.cells[v.i].p-this.cells[u.i].p),food=targets.find(q=>this.cells[q.i].p>0),meal=0;if(food){meal=this.graze(food.i,.15*a.size);a.energy+=meal;}
- a.energy-=genes.metabolism*a.size;
- if(a.energy<0){if(a.size>1){a.size=Math.max(1,a.size-.25);a.energy=.1;}else{c.a=null;continue;}}
+ for(let {i,id} of animals){let c=this.cells[i],a=c.a;if(!a||a.id!==id)continue;const genes=this.animalGenes(a);this.observeFood(a,i);const startSize=a.size,origin=i;i=a.mating?i:this.dart(i,snapshot);if(i<0)continue;c=this.cells[i];const darted=i!==origin;let pursuit={i,engaged:false};a.seeking=null;if(!darted&&!a.mating)pursuit=this.seekMate(i,snapshot);i=pursuit.i;c=this.cells[i];let targets=[{i},...this.neighbors(i)].sort((u,v)=>this.cells[v.i].p-this.cells[u.i].p),food=targets.find(q=>this.cells[q.i].p>0),meal=0;if(food){meal=this.graze(food.i,.15*a.size);a.energy+=meal;}
+ if(food)this.remember(a,food.i,this.cells[food.i].p>0?'food':'depleted',this.cells[food.i].p>0?this.cells[food.i].p/3:1);const costs=this.upkeep(a);a.energy-=costs.base+costs.sensing+costs.memory;
+ if(a.energy<0){if(a.size>1){a.size=Math.max(1,a.size-.25);a.energy=.1;}else{this.noteLoss(a,'starvationDeaths');this.starvationDeaths++;c.a=null;continue;}}
  if(this.lifeStage(a)!=='declining'&&a.energy>2+a.size&&a.size<10){let grow=Math.min(.25,10-a.size,11-this.total(c));a.size+=grow;a.energy-=grow;}
  a.maxTicks=a.size>=10&&startSize>=10?(a.maxTicks||0)+1:0;
  if(!pursuit.engaged&&this.divide(i))continue;
- if(meal===0&&!darted&&!pursuit.engaged&&!a.mating){let choices=this.neighbors(i).filter(q=>!this.cells[q.i].a&&this.total(this.cells[q.i])+a.size<=11);if(i%this.n===0||i%this.n===this.n-1||i<this.n||i>=this.n*(this.n-1))choices.push({i:-1});this.shuffle(choices);choices.sort((u,v)=>{let score=q=>q.i<0?0:this.cells[q.i].p*2+this.sense(i,genes.radius).find(s=>s.label===q.label).p;return score(v)-score(u);});if(choices.length){c.a=null;if(choices[0].i<0)this.departures++;else this.cells[choices[0].i].a=a;}}
+ if(meal===0&&!darted&&!pursuit.engaged&&!a.mating){let choices=this.neighbors(i).filter(q=>!this.cells[q.i].a&&this.total(this.cells[q.i])+a.size<=11);if(i%this.n===0||i%this.n===this.n-1||i<this.n||i>=this.n*(this.n-1))choices.push({i:-1});this.shuffle(choices);choices.sort((u,v)=>{let score=q=>q.i<0?0:this.cells[q.i].p*2+this.sense(i,genes.radius).find(s=>s.label===q.label).p+this.memoryBias(a,q.i);return score(v)-score(u);});if(choices.length){c.a=null;if(choices[0].i<0){this.departures++;this.noteLoss(a,'departures');}else this.cells[choices[0].i].a=a;}}
  }
  this.reproducePlants();
  for(let c of this.cells)if(this.opt.regen>0)c.f+=Math.min(this.opt.regen,10-c.f,11-this.total(c));this.tick++;this._snapshot=null;this._signalCache=null;this.record();}
- record(){let s=this.cells.reduce((s,c)=>({food:s.food+c.f,plant:s.plant+c.p,spores:s.spores+(c.spore?1:0),animals:s.animals+!!c.a,mass:s.mass+(c.a?.size||0)}),{food:0,plant:0,spores:0,animals:0,mass:0});this.stats=s;this.history.push(s);if(this.history.length>400)this.history.shift();}
+ record(){let s=this.cells.reduce((s,c)=>({food:s.food+c.f,plant:s.plant+c.p,spores:s.spores+(c.spore?1:0),animals:s.animals+!!c.a,mass:s.mass+(c.a?.size||0)}),{food:0,plant:0,spores:0,animals:0,mass:0});this.stats=s;this.history.push(s);if(this.history.length>400)this.history.shift();this.recordEvolution();}
 }
 
-Object.assign(World.prototype,matingMethods);
+Object.assign(World.prototype,matingMethods,memoryMethods,evolutionMethods);

@@ -1,4 +1,4 @@
-import assert from 'node:assert/strict';import{World as BaseWorld}from'../public/engine.mjs';class World extends BaseWorld{constructor(seed=42,options={}){super(seed,{size:20,...options});}}
+import assert from 'node:assert/strict';import{World as BaseWorld}from'../public/engine.mjs';class World extends BaseWorld{constructor(seed=42,options={}){super(seed,{size:20,animalSenseCost:0,plantSenseCost:0,fastGrowthCost:0,memoryCost:0,memoryStrength:0,...options});}}
 function fixture(opt={}){let w=new World(42,{regen:0,diffusion:0,growth:0,...opt});w.cells.forEach(c=>{c.f=0;c.p=0;c.a=null;c.pain=0});return w;}
 let w=fixture();w.cells[210].p=.5;assert.equal(w.graze(210,1),.5);assert.equal(w.cells[210].p,0);assert.equal(w.cells[210].pain,.5);w.step();assert(Math.abs(w.cells[210].pain-.4)<1e-10);assert(w.gradients(211).find(g=>g.label==='W').pain>0);
 function choice(weight){let w=fixture({painWeight:weight});w.cells[210].p=2;w.cells[210].f=8;w.cells[205].f=10;w.cells[215].f=10;w.cells[209].pain=10;let signals=w.cells.map((_,i)=>w.gradients(i));w.growPlants(signals);return w.cells.findIndex((c,i)=>i!==210&&c.p>0);}
