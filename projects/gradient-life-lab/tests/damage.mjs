@@ -4,5 +4,5 @@ let w=fixture();w.cells[210].p=.5;assert.equal(w.graze(210,1),.5);assert.equal(w
 function choice(weight){let w=fixture({painWeight:weight});w.cells[210].p=2;w.cells[210].f=8;w.cells[205].f=10;w.cells[215].f=10;w.cells[209].pain=10;let signals=w.cells.map((_,i)=>w.gradients(i));w.growPlants(signals);return w.cells.findIndex((c,i)=>i!==210&&c.p>0);}
 assert(choice(6)%20>10,'a tip grows east away from damage to its west');
 let clean=fixture({painWeight:0}),damaged=fixture({painWeight:0});for(let a of [clean,damaged]){a.cells[210].p=2;a.cells[210].f=8;a.cells[205].f=10;a.cells[215].f=10;}damaged.cells[209].pain=10;for(let a of [clean,damaged])a.growPlants(a.cells.map((_,i)=>a.gradients(i)));assert.deepEqual(clean.cells.map(c=>c.p),damaged.cells.map(c=>c.p));
-let defaults=new World();assert.equal(defaults.opt.radius,10);assert.equal(defaults.opt.growth,.5);assert.equal(defaults.opt.crowdThreshold,1);assert.equal(defaults.opt.dartDistance,3);
+let defaults=new World();assert.equal(defaults.opt.radius,10);assert.equal(defaults.opt.growth,.5);assert.equal(defaults.opt.crowdThreshold,5);assert.equal(defaults.opt.dartDistance,3);
 console.log('Passed grazing trace, next-tick decay, directional signal, growth away from damage, zero-weight control and updated defaults.');
