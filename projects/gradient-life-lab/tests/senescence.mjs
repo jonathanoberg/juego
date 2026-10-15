@@ -1,0 +1,9 @@
+import assert from 'node:assert/strict';import{World}from'../public/engine.mjs';
+function fixture(options={}){let w=new World(42,{regen:0,diffusion:0,growth:0,metabolism:0,crowdThreshold:9,divisionChance:1,divisionWait:0,reproductionAge:3,declineAge:5,declineChance:1,declineAmount:.25,...options});w.cells.forEach(c=>{c.f=0;c.p=0;c.a=null});w.cells[210].a={id:w.nextId++,size:10,energy:20,age:0,maxTicks:10};return w;}
+let old=fixture();old.cells[210].a.age=3;assert.equal(old.divide(210),false);assert.equal(old.lifeStage(old.cells[210].a),'post-reproductive');
+let young=fixture();assert(young.divide(210));assert(young.cells.filter(c=>c.a).every(c=>c.a.age===0));
+let decline=fixture({divisionChance:0});let a=decline.cells[210].a;a.age=3;decline.step();assert.equal(a.age,4);assert.equal(a.size,10);decline.step();assert.equal(a.age,5);assert.equal(a.size,9.75);assert.equal(decline.lifeStage(a),'declining');decline.step();assert.equal(a.size,9.5,'surplus energy cannot reverse decline');
+let death=fixture({divisionChance:0});death.cells[210].a.age=4;death.cells[210].a.size=1;death.step();assert.equal(death.ageDeaths,1);assert(death.cells.every(c=>!c.a));
+let off=fixture({divisionChance:0,declineChance:0});off.cells[210].a.age=30;off.step();assert.equal(off.cells.find(c=>c.a).a.size,10);assert.equal(off.ageDeaths,0);
+let ordered=fixture({reproductionAge:10,declineAge:2});ordered.cells[210].a.age=5;ordered.ageAnimal(210);assert.equal(ordered.cells[210].a.size,10);
+console.log('Passed reproductive cutoff, newborn daughters, delayed decline, irreversible shrink, death, disabled decline, and phase ordering.');
