@@ -1,6 +1,6 @@
 export const matingMethods={
  seekMate(i,snapshot){const a=this.cells[i].a;if(!a)return {i,engaged:false};a.seeking=null;const genes=this.animalGenes(a);
- if(a.gender!=='male'||a.size<6||a.mating||!this.fertile(a)||genes.mateDrive<=0)return {i,engaged:false};
+ if(a.gender!=='male'||a.size<6||a.mating||!this.fertile(a)||genes.mateDrive<=0||this.reserveTicks(a)<genes.mateReserveTicks)return {i,engaged:false};
  const available=new Set(this.cells.flatMap(c=>c.a&&!c.a.mating?[c.a.id]:[])),females=[];for(let j=0;j<this.cells.length;j++){const b=snapshot[j].a;if(!b||b.gender!=='female'||b.mating||!this.fertile(b)||!available.has(b.id))continue;
  if(Math.hypot(j%this.n-i%this.n,Math.floor(j/this.n)-Math.floor(i/this.n))<=genes.radius)females.push({i:j,id:b.id});}
  if(!females.length||this.random()>=genes.mateDrive)return {i,engaged:false};

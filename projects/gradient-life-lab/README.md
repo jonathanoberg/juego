@@ -104,13 +104,26 @@ History begins at tick zero, samples every five ticks, and progressively doubles
 
 New fixed run coefficients (all reset-only, all can be zero):
 
-- Animal sensing energy/tick = 0.0005 × inherited sensing radius². At radius 10 the cost is 0.05; at radius 5 it is 0.0125. This is added to ordinary metabolism.
+- Animal sensing energy/tick = 0.0005 × inherited sensing radius² × size / 10. For a size-10 adult, radius 10 costs 0.05 and radius 5 costs 0.0125; size-1 newborns pay one tenth of these costs. This is added to ordinary metabolism.
 - Plant sensing food/tick = 0.0001 × inherited radius² per occupied plant cell, added to mass maintenance. Nutrients are still shared across a touching network.
 - Growth conversion food/unit mass = 1 + 0.5 × inherited growth rate. At growth 0.5, a unit of mass costs 1.25 food. Extra cost is dissipated, not recycled. Growth remains bounded by cell capacity and available food.
-- Retained memories cost 0.002 energy per remembered place per tick.
+- Retained memories cost 0.002 × size / 10 energy per remembered place per tick.
 
 Animals inherit memory lifetime (default 30 ticks), capacity (8 places), and movement influence (2). Actual remembered locations are learned independently and never inherited. Animals record only food in their own cell or adjacent cells, including what they eat. A remembered patch locally observed empty becomes a depleted-patch memory; locally observed regrowth revises it back to food. Memories expire, are bounded by capacity, and influence ordinary food-search scoring through inverse distance and linear age decay. They can guide an animal toward an earlier observation outside current sensing range; they never reveal unobserved regrowth. Immediate feeding, escape, gestation and mate pursuit retain priority. The inspector lists each learned location and its age. Zero capacity/lifetime disables storage; zero influence disables steering while retained memories still have their configured cost.
 
 Animals also inherit `femaleBirthRatio`, default 0.5. At each birth, after crossover and mutation, the child's own ratio determines its gender. Founders use the initial ratio without food bias. Optional fixed `foodSexBias` defaults to zero. Birth probability = clamp(child ratio + bias × (mean plant mass / 10 in the birth cell and adjacent cells − 0.5), 0, 1). Positive bias makes plentiful plant food favor females; negative reverses it. This is an explicit experimental rule, not a biological assertion. Both mitosis and sexual births use it.
 
 Focused verification covers resource accounting and zero-cost controls, radius-squared sensing, memory capacity/expiry/revision, navigation from memory outside current sensing, no inherited memories, sex-specific loss bookkeeping, inherited ratio endpoints, optional food bias, and one-organism-one-vote summaries. Legacy rule fixtures disable new costs and memory steering to isolate those rules; independent 80×80 checks run with current defaults. UI controls and dashboard initialization are exercised in a DOM harness; browser visuals remain unverified.
+
+## Energy balance and reproductive reserves
+
+Sensing and memory costs now both scale linearly with body size divided by 10. Ordinary metabolism already scales with size. At radius 20 with eight memories, a size-1 animal pays 0.04 + 0.02 + 0.0016 = 0.0616 energy per tick, below its 0.15 maximum bite. A size-10 animal pays ten times as much and can eat ten times as much. Plant sensing costs are unchanged.
+
+Two new inherited, mutable animal traits express energy priorities in ticks of TOTAL upkeep (metabolism + sensing + retained-memory costs):
+
+- `foodReserveTicks`, default 5: when the most recent meal failed to cover this tick’s upkeep AND the remaining reserve is below the target, ordinary food search may proceed even after a positive meal. It can leave crumbs rather than waiting for nearby food to become completely empty. With adequate reserves or an adequate meal, existing feeding behavior remains. Food search with no meal still operates at any reserve.
+- `mateReserveTicks`, default 8: males must have at least this many ticks of upkeep in stored energy before seeking females. This applies to pursuit; it does not cancel existing gestation or change adjacent-pair conception rules.
+
+Both traits are copied to founders at reset, crossed over/mutated for descendants, and included in the evolution dashboard. Zero disables the respective new threshold. With zero total upkeep, reserve duration is infinite and adds no artificial pressure. The inspector displays reserve duration. Crowd escape and ongoing gestation keep their existing priorities.
+
+Checks cover size-proportional costs, positive-but-insufficient meals, adequate reserves, disabled thresholds, inherited differences in mate pursuit, survival of a fed radius-20 newborn, and inheritance of both reserve genes. Existing isolated-rule tests continue disabling optional costs to preserve their focus.
