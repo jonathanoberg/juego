@@ -23,7 +23,7 @@ Tests cover nutrient conservation during diffusion, disabling diffusion, network
 
 ## Model and current defaults
 
-- Cells share an 11-unit capacity across food (0–10), plant mass (0–10), and at most one animal (size 1–10). Quantities are fractional. Edges do not wrap.
+- Cells share an 11-unit capacity across food (0–10), plant mass (0–10), and at most one animal (size 1–10). Quantities are fractional. Edges do not wrap. Plants and diffusion remain bounded; animal movement can leave the world.
 - Start with 32 food cells at 10, 12 plant cells at 1 rooted in food, and seven size-1 animals with energy 3. Default seed: 42.
 - Eight directional signals sum quantity divided by distance within radius 10, excluding the observing cell. Signals convey information; they do not move nutrients.
 - Food diffuses between orthogonal neighbors down concentration differences, at default rate 0.08 divided among four directions. Snapshot transfers conserve food and respect capacity.
@@ -35,14 +35,16 @@ Tests cover nutrient conservation during diffusion, disabling diffusion, network
 - Animals eat up to 0.15 × size from the richest plant cell within their own cell or eight neighbors. Energy upkeep is 0.04 × size. Energy above 2 + size allows growth of up to 0.25, bounded by size 10 and available capacity. Starving animals shrink by 0.25, then die at size 1.
 - Animals without a meal move toward plants and directional plant signals, wandering on ties, only where they fit.
 - Crowding overrides feeding at one occupied adjacent cell (count, not animal mass), using the start-of-tick animal snapshot. An escape searches passable paths of up to five adjacent steps, ranking fewer neighbors, lower animal signal, then plant availability. Every path cell must fit the animal; it cannot jump obstacles. If no less crowded destination exists, ordinary feeding continues. Escape permits feeding at the destination but no second ordinary move, and has no extra energy cost. Threshold 9 disables it. Threshold and distance are adjustable; the UI counts escape events.
+- Animals age once per tick, stop dividing at age 150, and begin decline at age 220 (never before the reproductive cutoff). Decline has a 25% per-tick chance to subtract 0.25 size; below size 1 the animal dies. Declining animals can feed and move but cannot grow back. Daughters start at age zero. Timings, probability, and decrement are adjustable; probability zero disables age-related shrinking. No mass recycling. The inspector shows age/life stage and the header counts age deaths.
 - After five full ticks at size 10, an animal has a 10% chance per eligible tick to divide when an adjacent cell can accommodate a daughter. It becomes two new animals, each size 3 with 30% of its stored energy. The remaining 40% is lost as division cost, not recycled. Daughters first act the next tick. Shrinking resets the waiting period.
+- Animal escape can cross an edge if a passable path reaches one and steps remain to cross. Outside is an unpopulated escape destination. Departed animals are removed immediately, with no feeding, division, corpse, or nutrient return. Ordinary movement may also leave from an edge when no visible food offers a better destination. Merely standing on an edge is safe. The header counts departures separately from age deaths.
 - Each tick diffuses food, computes signals, resolves network actions then animal actions in seeded shuffled order, and finally renews food. This is a phased update with reproducible conflict resolution, not fully simultaneous action resolution.
 
 ## Outcomes and limitations
 
 Earlier versions collapsed because independently seeded plants lacked access to food. Rooting plants in food, sharing nutrients through threads, diffusion, and renewal were added incrementally. The user observed persistent plant networks and animals with renewal 0.01 before division was added.
 
-Historical defaults before crowd avoidance was added: with division enabled, default seed 42 produced nine divisions and then lost all plants and animals by tick 350 in a checked run. No equilibrium is guaranteed. Residual food cannot restart extinct plants; there is no germination, predation, aging, nutrient recycling, genetics, learning, memory, or transport delay. The UI exposes ecological rates for experiments rather than forcing survival.
+Historical defaults before crowd avoidance was added: with division enabled, default seed 42 produced nine divisions and then lost all plants and animals by tick 350 in a checked run. No equilibrium is guaranteed. Residual food cannot restart extinct plants; there is no germination, predation, nutrient recycling, genetics, learning, memory, or transport delay. The UI exposes ecological rates for experiments rather than forcing survival.
 
 ## Source and publication
 

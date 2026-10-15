@@ -1,0 +1,7 @@
+import assert from 'node:assert/strict';import{World}from'../public/engine.mjs';
+function fixture(i,steps=2){let w=new World(42,{crowdThreshold:1,dartDistance:steps,divisionChance:0,regen:0,diffusion:0,growth:0,metabolism:0});w.cells.forEach(c=>{c.f=0;c.p=0;c.a=null});w.cells[i].a={id:w.nextId++,size:2,energy:1};let neighbor=w.neighbors(i).find(q=>q.i%20>=i%20)?.i??w.neighbors(i)[0].i;w.cells[neighbor].a={id:w.nextId++,size:1,energy:1};return w;}
+for(let i of [0,19,380,399,200,219,10,390]){let w=fixture(i);let s=w.cells.map(c=>({...c}));assert.equal(w.dart(i,s),-1);assert.equal(w.departures,1);assert.equal(w.cells[i].a,null);assert.equal(w.ageDeaths,0);}
+let reach=fixture(201,2);assert.equal(reach.dart(201,reach.cells),-1);let short=fixture(201,1);assert.notEqual(short.dart(201,short.cells),-1);assert.equal(short.departures,0);
+let barrier=fixture(201,2);barrier.cells.forEach((c,i)=>{if(i!==201&&!c.a){c.f=10;c.p=1;}});assert.equal(barrier.dart(201,barrier.cells),201);assert.equal(barrier.departures,0);
+let still=fixture(200);still.cells.forEach((c,i)=>{if(i!==200)c.a=null});still.cells[200].p=1;still.step();assert(still.cells[200].a);assert.equal(still.departures,0);
+console.log('Passed all edges/corners, crossing distance, blocking, departure accounting and safe stationary edge animals.');

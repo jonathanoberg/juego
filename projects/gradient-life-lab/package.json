@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node tests/networks.mjs && node tests/division.mjs && node tests/crowding.mjs && node tests/damage.mjs",
+    "test": "node tests/networks.mjs && node tests/division.mjs && node tests/crowding.mjs && node tests/damage.mjs && node tests/senescence.mjs && node tests/boundaries.mjs",
     "sync-site": "node scripts/sync-site.mjs"
   }
 }
