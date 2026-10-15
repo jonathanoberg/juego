@@ -1,0 +1,8 @@
+import assert from 'node:assert/strict';import{World}from'../public/engine.mjs';
+function fixture(opt={}){let w=new World(42,{regen:0,diffusion:0,growth:0,...opt});w.cells.forEach(c=>{c.f=0;c.p=0;c.a=null;c.pain=0});return w;}
+let w=fixture();w.cells[210].p=.5;assert.equal(w.graze(210,1),.5);assert.equal(w.cells[210].p,0);assert.equal(w.cells[210].pain,.5);w.step();assert(Math.abs(w.cells[210].pain-.4)<1e-10);assert(w.gradients(211).find(g=>g.label==='W').pain>0);
+function choice(weight){let w=fixture({painWeight:weight});w.cells[210].p=2;w.cells[210].f=8;w.cells[205].f=10;w.cells[215].f=10;w.cells[209].pain=10;let signals=w.cells.map((_,i)=>w.gradients(i));w.growPlants(signals);return w.cells.findIndex((c,i)=>i!==210&&c.p>0);}
+assert(choice(6)%20>10,'a tip grows east away from damage to its west');
+let clean=fixture({painWeight:0}),damaged=fixture({painWeight:0});for(let a of [clean,damaged]){a.cells[210].p=2;a.cells[210].f=8;a.cells[205].f=10;a.cells[215].f=10;}damaged.cells[209].pain=10;for(let a of [clean,damaged])a.growPlants(a.cells.map((_,i)=>a.gradients(i)));assert.deepEqual(clean.cells.map(c=>c.p),damaged.cells.map(c=>c.p));
+let defaults=new World();assert.equal(defaults.opt.radius,10);assert.equal(defaults.opt.growth,.5);assert.equal(defaults.opt.crowdThreshold,1);assert.equal(defaults.opt.dartDistance,5);
+console.log('Passed grazing trace, next-tick decay, directional signal, growth away from damage, zero-weight control and updated defaults.');

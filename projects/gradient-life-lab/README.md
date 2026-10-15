@@ -25,15 +25,16 @@ Tests cover nutrient conservation during diffusion, disabling diffusion, network
 
 - Cells share an 11-unit capacity across food (0–10), plant mass (0–10), and at most one animal (size 1–10). Quantities are fractional. Edges do not wrap.
 - Start with 32 food cells at 10, 12 plant cells at 1 rooted in food, and seven size-1 animals with energy 3. Default seed: 42.
-- Eight directional signals sum quantity divided by distance within radius 5, excluding the observing cell. Signals convey information; they do not move nutrients.
+- Eight directional signals sum quantity divided by distance within radius 10, excluding the observing cell. Signals convey information; they do not move nutrients.
 - Food diffuses between orthogonal neighbors down concentration differences, at default rate 0.08 divided among four directions. Snapshot transfers conserve food and respect capacity.
 - Food renewal independently adds up to 0.01 per cell per tick, subject to capacity. Zero disables external replenishment.
 - Touching plant cells, including diagonal contacts, form one nutrient-sharing network. Networks merge on contact and split when connections vanish. Sharing is instantaneous and has no distance cost or persistent organism identity.
-- Maintenance costs 0.01 food per unit of plant mass per tick. Underfed cells start withering by 0.15 after six grace ticks. Fed cells grow by up to 0.35 per tick using food anywhere in their network.
+- Maintenance costs 0.01 food per unit of plant mass per tick. Underfed cells start withering by 0.15 after six grace ticks. Fed cells grow by up to 0.5 per tick using food anywhere in their network.
 - Fed networks of mass at least 1.5 can transfer 0.2 existing biomass into one new thread cell per tick, favoring food plus its directional signal. The network supports the tip across empty cells.
+- Grazing adds a local damage trace equal to consumed plant mass, capped at 10. It retains 80% per tick and affects the next tick’s plant extension. Candidate growth scores subtract 6 × inverse-distance damage potential within the signal radius from food attraction, including damage in the destination cell. Damage remains after a cell is eaten out. Weight zero disables avoidance. The UI exposes its weight, red damage outlines, and directional damage signals. This models a response to damage, not subjective pain.
 - Animals eat up to 0.15 × size from the richest plant cell within their own cell or eight neighbors. Energy upkeep is 0.04 × size. Energy above 2 + size allows growth of up to 0.25, bounded by size 10 and available capacity. Starving animals shrink by 0.25, then die at size 1.
 - Animals without a meal move toward plants and directional plant signals, wandering on ties, only where they fit.
-- Crowding overrides feeding at five occupied adjacent cells (count, not animal mass), using the start-of-tick animal snapshot. An escape searches passable paths of up to three adjacent steps, ranking fewer neighbors, lower animal signal, then plant availability. Every path cell must fit the animal; it cannot jump obstacles. If no less crowded destination exists, ordinary feeding continues. Escape permits feeding at the destination but no second ordinary move, and has no extra energy cost. Threshold 9 disables it. Threshold and distance are adjustable; the UI counts escape events.
+- Crowding overrides feeding at one occupied adjacent cell (count, not animal mass), using the start-of-tick animal snapshot. An escape searches passable paths of up to five adjacent steps, ranking fewer neighbors, lower animal signal, then plant availability. Every path cell must fit the animal; it cannot jump obstacles. If no less crowded destination exists, ordinary feeding continues. Escape permits feeding at the destination but no second ordinary move, and has no extra energy cost. Threshold 9 disables it. Threshold and distance are adjustable; the UI counts escape events.
 - After five full ticks at size 10, an animal has a 10% chance per eligible tick to divide when an adjacent cell can accommodate a daughter. It becomes two new animals, each size 3 with 30% of its stored energy. The remaining 40% is lost as division cost, not recycled. Daughters first act the next tick. Shrinking resets the waiting period.
 - Each tick diffuses food, computes signals, resolves network actions then animal actions in seeded shuffled order, and finally renews food. This is a phased update with reproducible conflict resolution, not fully simultaneous action resolution.
 
@@ -41,7 +42,7 @@ Tests cover nutrient conservation during diffusion, disabling diffusion, network
 
 Earlier versions collapsed because independently seeded plants lacked access to food. Rooting plants in food, sharing nutrients through threads, diffusion, and renewal were added incrementally. The user observed persistent plant networks and animals with renewal 0.01 before division was added.
 
-Before crowd avoidance was added, with division enabled, default seed 42 produced nine divisions and then lost all plants and animals by tick 350 in a checked run. No equilibrium is guaranteed. Residual food cannot restart extinct plants; there is no germination, predation, aging, nutrient recycling, genetics, learning, memory, or transport delay. The UI exposes ecological rates for experiments rather than forcing survival.
+Historical defaults before crowd avoidance was added: with division enabled, default seed 42 produced nine divisions and then lost all plants and animals by tick 350 in a checked run. No equilibrium is guaranteed. Residual food cannot restart extinct plants; there is no germination, predation, aging, nutrient recycling, genetics, learning, memory, or transport delay. The UI exposes ecological rates for experiments rather than forcing survival.
 
 ## Source and publication
 
@@ -54,3 +55,5 @@ npm run sync-site -- /workspace/sites/gradient-life-lab
 ```
 
 The script verifies the Site identity before copying. Package and publish through the Sites skill afterward; it manages its own source repository. Never copy credentials or deployment archives into juego. Keep this README synchronized with rule/default changes.
+
+The current experimental defaults (radius 10, plant growth 0.5, crowding threshold 1, escape distance 5) follow the user’s observation of interesting equilibria. That observation is not a guarantee across seeds or after damage avoidance.
