@@ -1,4 +1,4 @@
-import assert from 'node:assert/strict';import{World}from'../public/engine.mjs';
+import assert from 'node:assert/strict';import{World as BaseWorld}from'../public/engine.mjs';class World extends BaseWorld{constructor(seed=42,options={}){super(seed,{size:20,...options});}}
 function fixture(options={}){let w=new World(42,{regen:0,diffusion:0,growth:0,metabolism:0,crowdThreshold:9,divisionChance:1,divisionWait:0,reproductionAge:3,declineAge:5,declineChance:1,declineAmount:.25,...options});w.cells.forEach(c=>{c.f=0;c.p=0;c.a=null});w.cells[210].a={id:w.nextId++,size:10,energy:20,age:0,maxTicks:10};return w;}
 let old=fixture();old.cells[210].a.age=3;assert.equal(old.divide(210),false);assert.equal(old.lifeStage(old.cells[210].a),'post-reproductive');
 let young=fixture();assert(young.divide(210));assert(young.cells.filter(c=>c.a).every(c=>c.a.age===0));
