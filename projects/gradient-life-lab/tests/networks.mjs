@@ -1,4 +1,4 @@
-import assert from 'node:assert/strict';import{World as BaseWorld}from'../public/engine.mjs';class World extends BaseWorld{constructor(seed=42,options={}){super(seed,{size:20,...options});}}
+import assert from 'node:assert/strict';import{World as BaseWorld}from'../public/engine.mjs';class World extends BaseWorld{constructor(seed=42,options={}){super(seed,{size:20,animalSenseCost:0,plantSenseCost:0,fastGrowthCost:0,memoryCost:0,memoryStrength:0,...options});}}
 const blank=opt=>{let w=new World(1,opt);w.cells.forEach(c=>{c.f=0;c.p=0;c.a=null;c.hunger=0});return w};
 let d=blank({diffusion:.4});d.cells[210].f=10;for(let t=0;t<100;t++)d.diffuse();assert(Math.abs(d.cells.reduce((s,c)=>s+c.f,0)-10)<1e-8);assert(d.cells[211].f>0);
 let off=blank({diffusion:0});off.cells[210].f=10;off.diffuse();assert.equal(off.cells[210].f,10);assert.equal(off.cells[211].f,0);

@@ -14,7 +14,7 @@ export const matingMethods={
  for(const g of [...this.gestations]){let parents=g.parents.map(id=>live.get(id));if(parents.some(p=>!p)){for(let p of parents)if(p)p.a.mating=null;this.gestations=this.gestations.filter(x=>x!==g);continue;}
  if(--g.remaining>0)continue;
  let spots=[...new Set(parents.flatMap(p=>this.neighbors(p.i).map(q=>q.i)))].filter(i=>!this.cells[i].a&&!this.cells[i].spore&&this.total(this.cells[i])+1<=11);this.shuffle(spots);spots.sort((i,j)=>(this.cells[i].p>0)-(this.cells[j].p>0));
- for(let i of spots){if(!g.litter||parents.some(p=>p.a.energy<.5))break;let genes=this.inheritAnimal(parents[0].a.genes,parents[1].a.genes),child=this.newAnimal(genes,{size:1,energy:1,parentIds:[...g.parents],generation:Math.max(...parents.map(p=>p.a.generation||0))+1});this.cells[i].a=child;for(let p of parents){p.a.energy-=.5;p.a.lastSexBirth=this.tick;}g.litter--;this.sexualBirths++;}
+ for(let i of spots){if(!g.litter||parents.some(p=>p.a.energy<.5))break;let genes=this.inheritAnimal(parents[0].a.genes,parents[1].a.genes),child=this.newAnimal(genes,{size:1,energy:1,parentIds:[...g.parents],generation:Math.max(...parents.map(p=>p.a.generation||0))+1,birthCell:i});this.cells[i].a=child;this.noteBirth(child);for(let p of parents){p.a.energy-=.5;p.a.lastSexBirth=this.tick;}g.litter--;this.sexualBirths++;}
  if(!g.litter){for(let p of parents)p.a.mating=null;this.gestations=this.gestations.filter(x=>x!==g);}else g.remaining=1;
  }
  const next=new Map();
