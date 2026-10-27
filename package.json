@@ -8,6 +8,7 @@
   "scripts": {
     "test": "node --test prototyping/*.test.ts",
     "prototype": "node prototyping/demo.ts",
+    "prototype:actor-vm": "node prototyping/actor-vm-demo.ts",
     "typecheck": "tsc --noEmit",
     "prototype:status": "node prototyping/status-demo.ts",
     "prototype:inventory": "node prototyping/inventory-demo.ts",
