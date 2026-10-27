@@ -1,5 +1,23 @@
 # RPG Architecture Decisions
 
+## Repository publishing authorization — 2026-10-27
+
+Jonathan authorizes pushing completed RPG project work to `jonathanoberg/juego`,
+including the `prototype/actor-vm` branch, without asking again for each push.
+This standing permission covers pushes; it does not by itself authorize merging
+pull requests, force-pushing, deleting branches, or deploying applications.
+
+## Actor VM experiment — 2026-10-27
+
+- Prototype actor decision programs using an adaptation of the MIT-licensed
+  16bitjs decoder; keep this separate from effect evaluation and existing engines.
+- Four general-purpose 16-bit registers and limited persistent memory; body and
+  world state remain host-owned. Perception is imperfect, register arithmetic reliable.
+- Start with coarse body sensations and cached updates; defer noise and bias.
+- Bound execution per tick, yield on sensing, and emit actions for host resolution.
+- Preserve actor-local execution state in JSON checkpoints. See [actor-vm.md](actor-vm.md)
+  for provisional defaults, call conventions, provenance, and current limitations.
+
 Architecture decision record. Dates indicate when decisions or deferrals were recorded. Rows labeled provisional describe prototype choices rather than final gameplay policy. The maintained project copy is `docs/architecture-decisions.md` in the Juego repository.
 
 | Decision | Reason | Date |
