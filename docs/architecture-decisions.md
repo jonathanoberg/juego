@@ -1,5 +1,16 @@
 # RPG Architecture Decisions
 
+## Rabbit feeding correction — 2026-10-29
+
+- Include developmental energy (2 + size) and inherited upkeep reserves in the
+  perceived feeding target. The earlier survival-only target prevented founder
+  growth and produced almost no movement before plants surrounded them.
+- Have rabbit bytecode seek food below perceived target fullness (100); preserve
+  coarse cached body perception and authoritative host growth/action checks.
+- Count actual VM cell changes in the toolbar. Test juvenile foraging and feeding
+  across the growth threshold, rather than treating capacity checks as evidence
+  of functioning behavior.
+
 ## VM ecosystem integration — 2026-10-29
 
 - Combine the Gradient Life Lab visualization/ecology with the RPG actor VM;
