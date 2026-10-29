@@ -1,5 +1,30 @@
 # RPG Architecture Decisions
 
+## Rabbit feeding correction — 2026-10-29
+
+- Include developmental energy (2 + size) and inherited upkeep reserves in the
+  perceived feeding target. The earlier survival-only target prevented founder
+  growth and produced almost no movement before plants surrounded them.
+- Have rabbit bytecode seek food below perceived target fullness (100); preserve
+  coarse cached body perception and authoritative host growth/action checks.
+- Count actual VM cell changes in the toolbar. Test juvenile foraging and feeding
+  across the growth threshold, rather than treating capacity checks as evidence
+  of functioning behavior.
+
+## VM ecosystem integration — 2026-10-29
+
+- Combine the Gradient Life Lab visualization/ecology with the RPG actor VM;
+  use that VM controller by default and retain the old rules for comparison.
+- Keep plants as nutrient-sharing plants with spores; name the grazer species
+  rabbits. Give each plant identity and rabbit an independent VM.
+- Generate the browser VM from the shared TypeScript machine and check for drift.
+- Add a GROW action and an explicit crowding sensation. Host physiology remains
+  authoritative; VM programs request growth, feeding, movement and rest.
+- Preserve seeded scheduling, inherited traits, fresh offspring brains and
+  imperfect cached sensations. Bytecode evolution remains future work.
+- See `projects/gradient-life-lab/README.md` for initial mappings, timing changes,
+  baseline comparison mode and tested limitations.
+
 ## Repository publishing authorization — 2026-10-27
 
 Jonathan authorizes pushing completed RPG project work to `jonathanoberg/juego`,

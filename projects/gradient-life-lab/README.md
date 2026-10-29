@@ -1,5 +1,67 @@
 # Gradient Life Lab
 
+## Shared actor VM — October 29, 2026
+
+The default controller now runs plants and **rabbits** on the RPG project's
+16bitjs-based actor VM. The existing grid, population/trait charts, food diffusion,
+plant networks, spores, genetics, learned food locations and world physiology
+remain. Select a cell to see its actor's registers, program counter, most recent
+action/result, and cached body sensations in the top sidebar.
+
+- Every plant identity has one VM, including when tissue splits. Touching plants
+  share nutrients but retain separate brains and ancestry. A plant program senses
+  a nutrient/damage direction, yields, and then requests growth in that direction.
+  Local biomass growth and sporation require that identity's growth request.
+  Dormant spores do not execute instructions until they germinate.
+- Every rabbit has its own VM. Its authored program compares perceived crowding
+  and energy, senses space, food or mates, and requests a move, meal or rest.
+  Adjacent food has strength 100; distant food has strength at most 70. This lets
+  the program distinguish feeding range without receiving exact world coordinates.
+- Sensing and actions occupy separate ticks. Moves are single adjacent steps;
+  there is no reference-controller pathfinding or multi-step dart hidden in MOVE.
+  Collisions, full-body capacity, gestation locks and boundaries are checked by
+  the host when the action executes, so stale observations can fail.
+- Four unsigned 16-bit registers, 128 total memory words and a 16-word stack per
+  actor; a budget of 48 instructions per world tick. Sensing yields; the host
+  acknowledges each resolved action. Budgets, precision and refresh interval can
+  be supplied in World options. Body sensations round to 10 and are cached for
+  at least three ticks. Register values themselves remain exact.
+- Rabbit energy sensation is stored energy expressed as a percentage of the
+  growth threshold (2 + size) plus the inherited number of upkeep-reserve ticks.
+  Rabbits seek food below a perceived 100, permitting meals to support development
+  as well as survival. The earlier reserve-only mapping made founders rest for
+  roughly 60 ticks, then kept their meals below the growth threshold; it was fixed
+  after observing nearly stationary rabbits. The toolbar now counts actual VM
+  cell-to-cell moves (stays, blocked requests and departures are not moves).
+  The new crowding
+  body channel measures neighbors relative to the inherited crowd threshold.
+  These mappings are prototype assumptions. Body physiology keeps advancing even
+  when a VM stalls or faults. The existing sensing/memory upkeep is retained as
+  a per-tick cost rather than charging individual VM instructions.
+- Aging, maintenance, pregnancy/contact eligibility, births, mitosis and starvation
+  stay host physiology in this first integration. Newborns get fresh species
+  programs and do not inherit registers, perceptions or learned locations.
+  Genes still inherit/mutate; program bytecode does not yet evolve. Vocalization
+  is present in the generic VM but has no ecological host implementation yet.
+- The Reference rules controller remains selectable for comparison. Earlier
+  rule-specific regression fixtures explicitly select it. New VM integration
+  tests separately cover the default controller, growth/feeding, births/spores,
+  failures, runtime parity, seeded replay and capacity. VM ecology has different
+  timing and is not expected to reproduce old population trajectories.
+
+`public/actor-vm/` is generated from `prototyping/actor-vm/` at the repository root,
+including the upstream MIT license. Run `npm run build:vm` in this folder after
+editing the shared machine (requires the root TypeScript dev dependency).
+`npm test` checks that generated files are current and runs both controller suites.
+The deployed app itself remains buildless and has no external runtime dependencies.
+The `animal` property names and trait keys remain compatibility aliases internally;
+the concrete species is `rabbit`, and new callers can use `World.newRabbit()`.
+
+The following sections document the retained reference rules and historical runs;
+the VM differences above take precedence for the default mode. In a checked VM
+80×80 seed-42 run at tick 20, 112 rabbits remained; that short run is a smoke test,
+not evidence of ecological stability or evolved behavior.
+
 An exploratory 80×80 cellular ecosystem: local directional signals, slime-mold-like connected plant networks, diffusing nutrients, mobile grazers, and probabilistic animal division. This is a behavioral experiment, not a biologically validated model or a learning agent.
 
 Live private sandbox: https://gradient-life-lab.jonathanoberg.chatgpt.site
