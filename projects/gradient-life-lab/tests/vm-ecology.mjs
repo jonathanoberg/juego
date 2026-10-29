@@ -25,10 +25,27 @@ assert.equal(w.opt.controller, 'vm'); assert.equal(rabbit.species, 'rabbit');
 w.step(); assert.equal(rabbit.vmTurn.reason, 'yield'); assert.equal(w.cells[211].p, 3, 'sensing does not graze');
 w.step(); assert.equal(rabbit.vmTurn.action, 'eat'); assert.equal(rabbit.vmTurn.success, 1);
 assert(w.cells[211].p < 3); assert(rabbit.energy > 0);
-assert.equal(rabbit.brain.snapshot().sensations.energy.value, 10, 'eating does not rewrite the cached sensation');
+assert.equal(rabbit.brain.snapshot().sensations.energy.value, 0, 'eating does not rewrite the cached sensation');
 const child = w.newAnimal(rabbit.genes); assert.notEqual(child.brain, rabbit.brain);
 assert.deepEqual(child.brain.snapshot().sensations, {}, 'children have fresh perceptions');
 assert.equal(w.newRabbit().species, 'rabbit', 'rabbit API names the concrete species');
+
+// Founders must seek food while still juveniles, before they can seek mates.
+const foragerWorld = blank({ metabolism: .04 }), forager = foragerWorld.newRabbit(undefined, { energy: 3, gender: 'female' });
+foragerWorld.cells[210].a = forager; foragerWorld.cells[215].p = 5;
+foragerWorld.step(); assert.equal(forager.vmTurn.reason, 'yield');
+foragerWorld.step();
+assert.notEqual(foragerWorld.cells[210].a, forager, 'a juvenile with founder energy moves toward distant food');
+assert.equal(forager.vmTurn.action, 'move'); assert.equal(forager.vmTurn.success, 1);
+assert.equal(foragerWorld.vmMoves, 1);
+const growingWorld = blank({ metabolism: .04 }), growing = growingWorld.newRabbit(undefined, { energy: 3, gender: 'female' });
+growingWorld.cells[210].a = growing; growingWorld.cells[211].p = 5;
+growingWorld.step(); growingWorld.step();
+assert(growing.size > 1, 'feeding target allows a meal to cross the growth threshold');
+assert.equal(growing.vmTurn.action, 'eat');
+const founders = new World(42, { size: 20 }), original = new Map(founders.cells.flatMap((c, i) => c.a ? [[c.a.id, i]] : []));
+founders.step(); founders.step();
+assert(founders.cells.some((c, i) => c.a && original.has(c.a.id) && original.get(c.a.id) !== i), 'seed-42 founders visibly move by tick two');
 
 const breeding = blank({ matingChance: 1, gestationTicks: 1 });
 breeding.cells[210].a = breeding.newRabbit(undefined, { size: 4, energy: 10, gender: 'male' });
