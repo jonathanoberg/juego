@@ -26,8 +26,14 @@ action/result, and cached body sensations in the top sidebar.
   acknowledges each resolved action. Budgets, precision and refresh interval can
   be supplied in World options. Body sensations round to 10 and are cached for
   at least three ticks. Register values themselves remain exact.
-- Rabbit energy sensation is stored energy expressed as a percentage of twice
-  the inherited food-reserve target; zero upkeep produces 100. The new crowding
+- Rabbit energy sensation is stored energy expressed as a percentage of the
+  growth threshold (2 + size) plus the inherited number of upkeep-reserve ticks.
+  Rabbits seek food below a perceived 100, permitting meals to support development
+  as well as survival. The earlier reserve-only mapping made founders rest for
+  roughly 60 ticks, then kept their meals below the growth threshold; it was fixed
+  after observing nearly stationary rabbits. The toolbar now counts actual VM
+  cell-to-cell moves (stays, blocked requests and departures are not moves).
+  The new crowding
   body channel measures neighbors relative to the inherited crowd threshold.
   These mappings are prototype assumptions. Body physiology keeps advancing even
   when a VM stalls or faults. The existing sensing/memory upkeep is retained as
