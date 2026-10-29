@@ -26,7 +26,7 @@ export const rabbitProgram = program(p => {
   p.emit(asm.load('C', 100)); p.less('B', 'C', 'energy');
   p.call(SYS.SENSE, SENSE.SPACE); p.call(SYS.MOVE); p.jump('start');
   p.label('energy'); p.call(SYS.READ_BODY, 0);
-  p.emit(asm.load('C', 60)); p.less('B', 'C', 'food');
+  p.emit(asm.load('C', 100)); p.less('B', 'C', 'food');
   p.call(SYS.SENSE, SENSE.MATE);
   p.emit(asm.load('A', 1)); p.less('C', 'A', 'rest');
   p.call(SYS.MOVE); p.jump('start');
