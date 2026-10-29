@@ -77,7 +77,13 @@ export const vmMethods = {
     const startSize = a.size;
     const turn = this.runBrain(a, 'rabbit', {
       body: channel => {
-        if (channel === 'energy') return clamp(this.reserveTicks(a) / Math.max(1, this.animalGenes(a).foodReserveTicks * 2) * 100);
+        if (channel === 'energy') {
+          // Cover development as well as maintenance. A reserve-only target kept
+          // founders resting, then stopped meals far below the growth threshold.
+          const costs = this.upkeep(a), upkeep = costs.base + costs.sensing + costs.memory;
+          const target = 2 + a.size + upkeep * this.animalGenes(a).foodReserveTicks;
+          return clamp(a.energy / target * 100);
+        }
         if (channel === 'crowding') return this.animalGenes(a).crowdThreshold > 8 ? 0 : clamp(this.crowdAt(i, snapshot) / this.animalGenes(a).crowdThreshold * 100);
         return 0;
       },
@@ -95,7 +101,7 @@ export const vmMethods = {
         if (d === 9 && edge) { this.cells[i].a = null; this.departures++; this.noteLoss(a, 'departures'); success = 1; }
         else if (d === 8) success = 1;
         else if (q && !this.cells[q.i].a && this.total(this.cells[q.i]) + a.size <= 11) {
-          this.cells[i].a = null; this.cells[q.i].a = a; i = q.i; success = 1;
+          this.cells[i].a = null; this.cells[q.i].a = a; i = q.i; success = 1; this.vmMoves = (this.vmMoves || 0) + 1;
         }
       } else if (kind === 'rest') success = 1;
       a.brain.completeAction(success); a.vmTurn.success = success;
