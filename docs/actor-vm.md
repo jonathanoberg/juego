@@ -20,7 +20,8 @@ are configurable per actor. Bias and random noise are deferred. Sensation and
 motivation remain separate: programs decide how to respond to perceived values.
 
 Initial channels: energy (0 depleted, 100 full), fatigue and pain (0 absent,
-100 maximum). These are prototype conventions, not new production entity schemas.
+100 maximum). The ecology integration adds crowding as channel 3. These are
+prototype conventions, not new production entity schemas.
 
 Default memory is 1024 words, including immutable program words at its start;
 remaining words are writable persistent memory. Default stack capacity is 32 words.
@@ -43,6 +44,7 @@ Inputs are preserved unless the table specifies an output. A is not overwritten.
 | 6 | REST | B: host-defined rest mode | Pending action | Waits for host |
 | 7 | YIELD | None | None | Yields |
 | 8 | READ_RESULT | None | B: last completed action result | Continues |
+| 9 | GROW | B: requested direction | Pending action | Waits for host |
 
 SENSE clears B/C/D to zero when nothing is detected. Direction zero may also be
 valid, so inspect D. The host supplies already-limited perception; this VM does
@@ -90,7 +92,8 @@ helpers and dependencies are not included.
 This is a genuine adaptation of the 16bitjs instruction decoder, not an independent
 instruction set. Runtime safety and memory protections intentionally differ from
 upstream. The prototype sits alongside existing effect/personality engines; it is
-not yet integrated with Gradient Life Lab and does not replace effect evaluation.
+integrated with Gradient Life Lab as of October 29, 2026, and does not replace
+effect evaluation. See that project's README for authored plant/rabbit programs.
 
 ## What the example demonstrates
 

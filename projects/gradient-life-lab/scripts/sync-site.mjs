@@ -1,4 +1,4 @@
-import {readFile,copyFile,mkdir,readdir} from 'node:fs/promises';
+import {readFile,cp,mkdir,readdir} from 'node:fs/promises';
 import {resolve,dirname,join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
@@ -7,5 +7,5 @@ if(!target)throw new Error('Usage: npm run sync-site -- /absolute/path/to/gradie
 const checkout=resolve(target),manifest=JSON.parse(await readFile(join(checkout,'.openai/hosting.json'),'utf8'));
 if(manifest.project_id!=='appgprj_6ad10b0e4c788191a45d8d5f608c6e21'||manifest.static?.directory!=='dist')throw new Error('Target is not the expected Gradient Life Lab static Site.');
 await mkdir(join(checkout,'dist'),{recursive:true});
-for(const name of await readdir(join(root,'public')))await copyFile(join(root,'public',name),join(checkout,'dist',name));
+for(const name of await readdir(join(root,'public')))await cp(join(root,'public',name),join(checkout,'dist',name),{recursive:true});
 console.log('Canonical application files copied to the Site checkout. Use the Sites workflow to package and publish.');

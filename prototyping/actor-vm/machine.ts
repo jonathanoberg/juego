@@ -1,8 +1,8 @@
 import decode from './vendor/decoder.cjs';
 
 export type Register = 'A' | 'B' | 'C' | 'D';
-export type BodyChannel = 'energy' | 'fatigue' | 'pain';
-export type Action = { kind: 'move' | 'eat' | 'vocalize' | 'rest'; argument: number };
+export type BodyChannel = 'energy' | 'fatigue' | 'pain' | 'crowding';
+export type Action = { kind: 'move' | 'eat' | 'vocalize' | 'rest' | 'grow'; argument: number };
 export interface Environment {
   // Values are normalized body sensations, 0..100. Exact state stays in the host.
   body(channel: BodyChannel): number;
@@ -18,8 +18,8 @@ export interface Turn {
   reason: 'budget' | 'yield' | 'action' | 'waiting' | 'halted' | 'fault';
   executed: number; action?: Action; fault?: string;
 }
-export const SYS = { READ_BODY: 1, SENSE: 2, MOVE: 3, EAT: 4, VOCALIZE: 5, REST: 6, YIELD: 7, READ_RESULT: 8 } as const;
-const channels: BodyChannel[] = ['energy', 'fatigue', 'pain'];
+export const SYS = { READ_BODY: 1, SENSE: 2, MOVE: 3, EAT: 4, VOCALIZE: 5, REST: 6, YIELD: 7, READ_RESULT: 8, GROW: 9 } as const;
+const channels: BodyChannel[] = ['energy', 'fatigue', 'pain', 'crowding'];
 const names = ['A', 'B', 'C', 'D', 'IP', 'SP'];
 function integer(value: number, min: number, max: number, label: string) {
   if (!Number.isSafeInteger(value) || value < min || value > max) throw new Error(`Invalid ${label}`);
@@ -62,7 +62,7 @@ export class ActorVM {
       if (!channels.includes(channel as BodyChannel) || !reading) throw new Error('Invalid saved sensation');
       integer(reading.value, 0, 100, 'saved sensation'); integer(reading.at, 0, saved.lastTick, 'saved sensation time');
     }
-    if (saved.pending && (!['move', 'eat', 'vocalize', 'rest'].includes(saved.pending.kind) || !Number.isInteger(saved.pending.argument))) throw new Error('Invalid pending action');
+    if (saved.pending && (!['move', 'eat', 'vocalize', 'rest', 'grow'].includes(saved.pending.kind) || !Number.isInteger(saved.pending.argument))) throw new Error('Invalid pending action');
     if (saved.pending) word(saved.pending.argument);
     vm.state = structuredClone(saved);
     return vm;
@@ -124,8 +124,8 @@ export class ActorVM {
           // A sensory operation consumes the rest of this tick, including failed detection.
           yielded = true; break;
         }
-        case SYS.MOVE: case SYS.EAT: case SYS.VOCALIZE: case SYS.REST: {
-          const kinds = { 3: 'move', 4: 'eat', 5: 'vocalize', 6: 'rest' } as const;
+        case SYS.MOVE: case SYS.EAT: case SYS.VOCALIZE: case SYS.REST: case SYS.GROW: {
+          const kinds = { 3: 'move', 4: 'eat', 5: 'vocalize', 6: 'rest', 9: 'grow' } as const;
           s.pending = { kind: kinds[registers.A as keyof typeof kinds], argument: input }; yielded = true; break;
         }
         case SYS.YIELD: yielded = true; break;

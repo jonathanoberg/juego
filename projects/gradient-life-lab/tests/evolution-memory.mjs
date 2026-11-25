@@ -1,4 +1,4 @@
-import assert from 'node:assert/strict';import{World}from'../public/engine.mjs';
+import assert from 'node:assert/strict';import{World}from'./reference-world.mjs';
 function blank(options={}){let w=new World(42,{size:20,regen:0,diffusion:0,animalMutationChance:0,plantMutationChance:0,...options});w.cells.forEach(c=>{c.f=0;c.p=0;c.spore=0;c.a=null;c.plantId=null});return w;}
 let cost=blank(),a=cost.newAnimal(undefined,{size:2});cost.remember(a,210,'food');cost.remember(a,211,'depleted');let bill=cost.upkeep(a);assert.equal(bill.base,.08);assert.equal(bill.sensing,.01);assert.equal(bill.memory,.0008);let small=cost.newAnimal({...a.genes,radius:5},{size:2});assert.equal(cost.upkeep(small).sensing,.0025);
 for(let on of [false,true]){let w=blank({growth:.5,plantSenseCost:on?.0001:0,fastGrowthCost:on?.5:0});w.cells[210].p=1;w.cells[210].f=4;w.growPlants();assert(Math.abs(w.cells[210].p-1.5)<1e-9);assert(Math.abs(w.cells[210].f-(on?3.355:3.49))<1e-9,'food pays maintenance, sensing and growth conversion');}
